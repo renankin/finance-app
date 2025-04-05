@@ -1,5 +1,5 @@
 from asset_analyser import AssetAnalyser
-from data_processing import FinanceData
+from finance_data import FinanceData
 from utils import *
 
 

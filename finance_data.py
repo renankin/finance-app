@@ -6,11 +6,12 @@ class FinanceData:
 
     def __init__(self):
         self.column_names = ["date", "transaction_type", "asset_name",
-                             "quantity", "total_value"]
-        self.dataframe = pd.concat([self.add_nubank_data(),
-                                    self.add_trading212_data()])
+                             "quantity", "total_value", "currency"]
 
-    def add_nubank_data(self):
+    def create_df(self):
+        return pd.concat([self.nubank(), self.trading212()])
+
+    def nubank(self):
         xls_files = glob("assets/nubank_statements/*.xlsx")
         nubank_column_names = [
             "entry_type", "date", "transaction_type",  "asset_name",
@@ -74,9 +75,11 @@ class FinanceData:
             | (nubank_df.transaction_type == "split")
         ]
 
+        nubank_df["currency"] = "BRL"
+
         return nubank_df[self.column_names]
 
-    def add_trading212_data(self):
+    def trading212(self):
         csv_files = glob("assets/trading212_statements/*.csv")
         df_list = (pd.read_csv(
             filepath_or_buffer=file,
@@ -96,6 +99,7 @@ class FinanceData:
 
         trading_df["quantity"] = trading_df.total_value
         trading_df["asset_name"] = "cash ISA"
+        trading_df["currency"] = "GBP"
 
         trading_df.loc[
             (trading_df.transaction_type == "purchase")
