@@ -6,3 +6,4 @@ assets/
 statements/
 __pycache__/
 *.csv
+*.db
