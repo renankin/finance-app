@@ -7,6 +7,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 import sqlite3
+import yfinance as yf
 
 load_dotenv()
 
@@ -41,22 +42,40 @@ def include_nubank_table(cursor):
         """
         CREATE TABLE nubank (
             date DATE NOT NULL,
-            type VARCHAR(50) NOT NULL,
-            name VARCHAR(50) NOT NULL,
+            transaction_type VARCHAR(50) NOT NULL,
+            asset_name VARCHAR(50) NOT NULL,
+            asset_type VARCHAR(25) NOT NULL,
             quantity FLOAT NOT NULL,
+            currency CHAR(3) NOT NULL,
             value REAL NOT NULL
         )
         """
     )
 
+    # Dicts for splits and transactions
+    name_change = {
+        "TRPL3": "ISAE3",
+        "ITSA4": "ITSA3",
+        "LOGG3": "MRVE3",
+        }
+    splits = {}
+    transactions_map = {
+        "Dividendo": "Dividend",
+        "Dividendo - Transferido": "Dividend",
+        "Juros Sobre Capital Próprio": "Dividend",
+        "Juros Sobre Capital Próprio - Transferido": "Dividend",
+        "Compra": "Purchase",
+        "Cobrança de Taxa Semestral": "Bond Tax",
+        "Resgate": "Sale",
+        "Venda": "Sale",
+        "Leilão de Fração": "Sale",
+    }
+
     # Include entries for Nubank
     entries = os.scandir(NUBANK_PATH)
     for entry in entries:
 
-        # Capture only CSV files
         if entry.name[-4:] == ".csv":
-
-            # Open CSV files
             file = open(f"{NUBANK_PATH}/{entry.name}", "r")
             reader = csv.DictReader(
                 file,
@@ -66,60 +85,78 @@ def include_nubank_table(cursor):
                     "Valor da Operação"
                 ],
             )
-
-            # Skip header
             next(reader)
 
-            # Iterate over CSV lines
             for row in reader:
-
-                # Extract operation value
                 value = (
                     row["Valor da Operação"].replace("R$", "")
                     .replace(",", "").strip()
                 )
 
-                # Check if there's a value in the transaction
                 if "-" not in value:
 
-                    # Define type of transaction dict
-                    transactions = {
-                        "Dividendo": "Dividend",
-                        "Dividendo - Transferido": "Dividend",
-                        "Juros Sobre Capital Próprio": "Dividend",
-                        "Juros Sobre Capital Próprio - Transferido":
-                        "Dividend",
-                        "Compra": "Purchase",
-                        "Cobrança de Taxa Semestral": "Bond Tax",
-                        "Resgate": "Sale",
-                        "Venda": "Sale",
-                        "Leilão de Fração": "Sale",
-                    }
+                    value = float(value)
 
-                    # Edge cases for purchase and sale of stocks
+                    # Edge cases
                     if row["Entrada/Saída"] == "Credito":
-                        transactions["Transferência"] = "Purchase"
-                        transactions["Transferência - Liquidação"] = "Purchase"
+                        transactions_map["Transferência"] = "Purchase"
+                        transactions_map[
+                            "Transferência - Liquidação"
+                        ] = "Purchase"
                     else:
-                        transactions["Transferência"] = "Sale"
-                        transactions["Transferência - Liquidação"] = "Sale"
+                        transactions_map["Transferência"] = "Sale"
+                        transactions_map[
+                            "Transferência - Liquidação"
+                        ] = "Sale"
 
-                    # Extract remaining operations
                     date = (
                         datetime.strptime(row["Data"], "%d/%m/%Y")
                         .date().isoformat()
                     )
-                    type = transactions[row["Movimentação"]]
-                    name = row["Produto"].split(" - ")[0].strip()
-                    qty = row["Quantidade"]
+                    
+                    transaction_type = transactions_map[row["Movimentação"]]
+                    
+                    asset_name = row["Produto"].split(" - ")[0].strip()
+                    if asset_name in name_change:
+                        asset_name = name_change[asset_name]
+
+                    if "TESOURO" in asset_name.upper():
+                        asset_type = "Bond"
+                    elif "FUNDO" in asset_name.upper():
+                        asset_type = "Mutual fund"
+                    else:
+                        asset_type = "Stock"
+
+                    # Adjust quantity based on stock splits
+                    qty = float(row["Quantidade"])
+                    if asset_type == "Stock":
+                        if asset_name in splits:
+                            if not splits[asset_name].empty:
+                                valid_splits = splits[asset_name][
+                                    splits[asset_name].index > date
+                                ]
+                                for split in valid_splits:
+                                    qty *= split
+                        else:
+                            try:
+                                data = yf.Ticker(f"{asset_name}.SA").splits
+                            except:
+                                print(
+                                    "Failed to connect to yfinance. Not adjusting for stock splits..."
+                                )
+                            else:
+                                splits[asset_name] = data
 
                     # Insert transaction into database
                     cursor.execute(
                         """
-                        INSERT INTO nubank (date, type, name, quantity, value)
-                        VALUES (?, ?, ?, ?, ?)
+                        INSERT INTO nubank
+                        (date, transaction_type, asset_name,
+                        asset_type, quantity, currency, value)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
                         """,
-                        (date, type, name, qty, value)
+                        (date, transaction_type, asset_name,
+                         asset_type, qty, "BRL", value)
                     )
 
 
@@ -134,8 +171,8 @@ def include_trading212_table(cursor):
         """
         CREATE TABLE trading_212 (
             date DATETIME NOT NULL,
-            type VARCHAR(50) NOT NULL,
-            name VARCHAR(50) NOT NULL,
+            transaction_type VARCHAR(50) NOT NULL,
+            asset_name VARCHAR(50) NOT NULL,
             value REAL NOT NULL,
             currency CHAR(3) NOT NULL
         )
@@ -168,13 +205,16 @@ def include_trading212_table(cursor):
                 # Insert transaction into database
                 cursor.execute(
                     """
-                    INSERT INTO trading_212 (date, type, name, value, currency)
+                    INSERT INTO trading_212
+                    (date, transaction_type, asset_name, value, currency)
                     VALUES (?, ?, ?, ?, ?)
                     """,
-                    (row["Time"], row["Action"], "Trading 212",
-                     row["Total"], row["Currency"])
+                    (
+                        row["Time"].split(".")[0],
+                        row["Action"], "Trading 212",
+                        row["Total"], row["Currency"]
+                    )
                 )
-
 
 
 if __name__ == "__main__":
