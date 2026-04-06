@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %}Add{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('stocks.add') }}" method="post">
+    <input name="date" type="date" placeholder="Date" />
+    <input name="symbol" type="text" placeholder="Symbol" />
+    <input name="shares" type="text" placeholder="Shares" />
+    <input name="price" type="text" placeholder="Price" />
+    <button type="input" class="btn btn-primary">Add</button>
+  </form>
+{% endblock main %}

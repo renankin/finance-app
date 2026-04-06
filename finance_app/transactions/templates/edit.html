@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Edit{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('transactions.edit', id=transaction.id) }}"
+        method="post">
+    <p>Symbol: {{ transaction.symbol }}</p>
+    <p>
+      Date:
+      <input name="date" type="date" value="{{ transaction.date }}" />
+    </p>
+    <p>
+      Shares:
+      <input name="shares" type="text" value="{{ transaction.shares }}" />
+    </p>
+    <p>
+      Price:
+      <input name="price" type="text" value="{{ transaction.price }}" />
+    </p>
+    <p>
+      <button type="submit" class="btn btn-primary">Edit</button>
+    </p>
+  </form>
+{% endblock main %}

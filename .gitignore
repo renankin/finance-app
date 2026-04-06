@@ -1,9 +1,6 @@
-.DS_Store
+instance/
 .vscode/
+__pycache__/
+.DS_Store
 .python-version
 .env
-assets/
-statements/
-__pycache__/
-*.csv
-*.db

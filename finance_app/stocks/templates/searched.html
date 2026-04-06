@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}
+  Quoted
+{% endblock title %}
+{% block main %}
+  <table class="table table-borderless">
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <td>{{ quote.name }}</td>
+      </tr>
+      <tr>
+        <th>Previous close</th>
+        <td>{{ quote.previousClose | format_currency(quote.currency) }}</td>
+      </tr>
+    </tbody>
+  </table>
+  {% if quote.splits: %}
+    <p>Stock splits</p>
+    <table class="table table-sm">
+      <thead>
+        <th>Date</th>
+        <th>Ratio</th>
+      </thead>
+      {% for split in quote.splits: %}
+        <tbody>
+          <tr>
+            <td>{{ split.date | format_date }}</td>
+            <td>{{ split.ratio }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock main %}

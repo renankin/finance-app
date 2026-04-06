@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}
+  Find Transaction
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('transactions.history') }}" method="post">
+    <select class="form-select" name="symbol">
+      {% for symbol in symbols: %}<option value="{{ symbol }}">{{ symbol }}</option>{% endfor %}
+    </select>
+    <button type="input" class="btn btn-primary">Get transactions</button>
+  </form>
+{% endblock main %}

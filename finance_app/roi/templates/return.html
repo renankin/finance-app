@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}
+  Return on Investment
+{% endblock title %}
+{% block main %}
+  <table class="table">
+    <thead>
+      <th>Symbol</th>
+      <th>Total Invested</th>
+      <th>Dividends + Valuation</th>
+      <th>Annualized return</th>
+      <th>Absolute return</th>
+      <th>Holding period</th>
+    </thead>
+    <tbody>
+      {% for asset in assets: %}
+        <tr>
+          <td>{{ asset["symbol"] }}</td>
+          <td>{{ asset["total_invested"] | format_currency(asset["currency"]) }}</td>
+          <td>{{ asset["total_earned"] | format_currency(asset["currency"]) }}</td>
+          <td>
+            {% if asset["annual_return"]: %}
+              {{ "%.2f" | format(100 * asset["annual_return"]) }}%
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>{{ "%.2f" | format(100 * asset["absolute_return"]) }}%</td>
+          <td>{{ asset["holding_period"] }} days</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}
