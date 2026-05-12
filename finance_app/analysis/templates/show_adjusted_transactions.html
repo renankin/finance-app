@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}
+  Adjusted Transactions
+{% endblock title %}
+{% block main %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Shares</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Adjusted</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td>{{ t["date"] | format_date }}</td>
+        <td>{{ t["shares"] }}</td>
+        <td>{{ t["price"] | format_currency(t["currency"]) }}</td>
+        <td>{{ t["shares"] * t["price"] }}</td>
+        <td>{{ t["adjusted"] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}

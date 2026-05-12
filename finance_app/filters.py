@@ -1,11 +1,13 @@
 import datetime as dt
 
+
 def format_currency(value, currency):
     """Takes currency input and returns formatted price value"""
 
     map = {
-        "USD": "$",
+        "GBP": "£",
         "BRL": "R$",
+        "USD": "$",
     }
 
     if currency in map:

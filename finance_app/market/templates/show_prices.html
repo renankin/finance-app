@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}
+  Prices
+{% endblock title %}
+{% block main %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for price in prices: %}
+        <tr>
+          <td>{{ price["date"] | format_date }}</td>
+          <td>{{ price["unit_price"] | format_currency(price["currency"]) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}

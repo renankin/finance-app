@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}
+  Add new asset
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('assets.add') }}" method="post">
+    <select name="account_id">
+      {% for account in accounts: %}
+        <option value="{{ account['account_id'] }}">{{ account["account_name"] }}</option>
+      {% endfor %}
+    </select>
+    <select name="asset_type">
+      <option value="bond">Bond</option>
+      <option value="etf">ETF</option>
+      <option value="stock">Stock</option>
+    </select>
+    <input name="asset_name" type="text" placeholder="Asset name" />
+    <select name="still_open">
+      <option value="0">Position closed</option>
+      <option value="1">Position open</option>
+    </select>
+    <button type="input" class="btn btn-primary">Add</button>
+  </form>
+{% endblock main %}

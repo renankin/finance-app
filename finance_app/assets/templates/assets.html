@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}
+  Assets
+{% endblock title %}
+{% block main %}
+  <a href="{{ url_for('assets.add') }}">Add new asset</a>
+  <table class="table table-borderless">
+    <thead>
+      <tr>
+        <th>Asset name</th>
+        <th>Account name</th>
+        <th>Asset type</th>
+        <th>Position open</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in assets: %}
+        <tr>
+          <td>{{ asset["asset_name"] }}</td>
+          <td>{{ asset["account_name"] }}</td>
+          <td>{{ asset["asset_type"] | capitalize }}</td>
+          <td>
+            {% if asset["still_open"] == 1: %}
+              Yes
+            {% else: %}
+              No
+            {% endif %}
+          </td>
+          <td>
+            <form action="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}"
+                  method="get">
+              <button type="submit" class="btn btn-primary">Edit asset</button>
+            </form>
+          </td>
+          <td>
+            <form action="{{ url_for('assets.delete', asset_id=asset['asset_id']) }}"
+                  method="post">
+              <button type="submit" class="btn btn-primary">Delete asset</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}

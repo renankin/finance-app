@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}
+  Edit
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}"
+        method="post">
+    <p>
+      Account name: {{ asset["account_name"] }}
+      <input name="account_id" type="hidden" value="{{ asset['account_id'] }}" />
+    </p>
+    <p>
+      Asset name:
+      <input name="asset_name" type="text" value="{{ asset['asset_name'] }}" />
+    </p>
+    <p>
+      Type:
+      <select name="asset_type">
+        <option value="bond">Bond</option>
+        <option value="etf">ETF</option>
+        <option value="stock">Stock</option>
+      </select>
+    </p>
+    <select name="still_open">
+      <option value="0">Position closed</option>
+      <option value="1">Position open</option>
+    </select>
+    <p>
+      <button type="submit" class="btn btn-primary">Edit</button>
+    </p>
+  </form>
+{% endblock main %}

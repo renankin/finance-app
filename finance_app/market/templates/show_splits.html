@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}
+  Splits
+{% endblock title %}
+{% block main %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Split ratio</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for split in splits: %}
+        <tr>
+          <td>{{ split["date"] | format_date }}</td>
+          <td>{{ split["split_ratio"] }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}

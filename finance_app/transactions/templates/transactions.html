@@ -3,32 +3,35 @@
   History
 {% endblock title %}
 {% block main %}
+  <a href="{{ url_for('transactions.add') }}">Add new transaction</a>
   <table class="table table-borderless">
     <thead>
       <tr>
+        <th>Account name</th>
+        <th>Asset name</th>
         <th>Date</th>
-        <th>Symbol</th>
         <th>Shares</th>
         <th>Price</th>
         <th>Total</th>
       </tr>
     </thead>
     <tbody>
-      {% for transaction in transactions: %}
+      {% for t in transactions: %}
         <tr>
-          <td>{{ transaction["date"]| format_date }}</td>
-          <td>{{ transaction["symbol"] }}</td>
-          <td>{{ "%.1f" | format(transaction["shares"]) }}</td>
-          <td>{{ transaction["price"] | format_currency(transaction["currency"]) }}</td>
-          <td>{{ (transaction["price"] * transaction["shares"] ) | format_currency(transaction["currency"]) }}</td>
+          <td>{{ t ["account_name"] }}</td>
+          <td>{{ t ["asset_name"] }}</td>
+          <td>{{ t["date"]| format_date }}</td>
+          <td>{{ "%.2f" | format(t["shares"]) }}</td>
+          <td>{{ t["price"] | format_currency(t["currency"]) }}</td>
+          <td>{{ (t["price"] * t["shares"]) | format_currency(t["currency"]) }}</td>
           <td>
-            <form action="{{ url_for('transactions.edit', id=transaction.id) }}"
+            <form action="{{ url_for('transactions.edit', transaction_id=t['transaction_id']) }}"
                   method="get">
               <button type="submit" class="btn btn-primary">Edit</button>
             </form>
           </td>
           <td>
-            <form action="{{ url_for('transactions.delete', id=transaction.id) }}"
+            <form action="{{ url_for('transactions.delete', transaction_id=t['transaction_id']) }}"
                   method="post">
               <button type="submit" class="btn btn-primary">Delete</button>
             </form>

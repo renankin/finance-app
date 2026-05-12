@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}
+  Edit account
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('accounts.edit', account_id=account['account_id']) }}"
+        method="post">
+    <p>
+      Account name:
+      <input name="account_name" type="text" value="{{ account['account_name'] }}" />
+    </p>
+    <p>
+      Currency:
+      <input name="currency" type="text" value="{{ account['currency'] }}" />
+    </p>
+    <p>
+      <button type="submit" class="btn btn-primary">Edit</button>
+    </p>
+  </form>
+{% endblock main %}

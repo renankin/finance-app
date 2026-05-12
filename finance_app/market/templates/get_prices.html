@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}
+  Fetch prices
+{% endblock title %}
+{% block main %}
+  <table class="table table-borderless">
+    {% for asset in assets %}
+      <tr>
+        <td>{{ asset["asset_name"] }}</td>
+        <td>
+          <form action="{{ url_for('market.show_prices', asset_id=asset['asset_id']) }}"
+                method="get">
+            <button type="input" class="btn btn-primary">Show prices</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{ url_for('market.add_prices', asset_id=asset['asset_id']) }}"
+                method="post">
+            <button type="input" class="btn btn-primary">Add prices</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{ url_for('market.delete_prices', asset_id=asset['asset_id']) }}"
+                method="post">
+            <button type="input" class="btn btn-primary">Delete prices</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock main %}

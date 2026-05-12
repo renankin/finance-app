@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}
+  Fetch splits
+{% endblock title %}
+{% block main %}
+  <table class="table table-borderless">
+    {% for asset in assets %}
+      <tr>
+        <td>{{ asset["asset_name"] }}</td>
+        <td>
+          <form action="{{ url_for('market.show_splits', asset_id=asset['asset_id']) }}"
+                method="get">
+            <button type="input" class="btn btn-primary">Show splits</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{ url_for('market.add_splits', asset_id=asset['asset_id']) }}"
+                method="post">
+            <button type="input" class="btn btn-primary">Add splits</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{ url_for('market.delete_splits', asset_id=asset['asset_id']) }}"
+                method="post">
+            <button type="input" class="btn btn-primary">Delete splits</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock main %}

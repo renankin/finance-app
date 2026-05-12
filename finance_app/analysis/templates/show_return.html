@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}
+  Return on Investment
+{% endblock title %}
+{% block main %}
+  <table class="table">
+    <thead>
+      <th>Asset name</th>
+      <th>Annualized return</th>
+    </thead>
+    <tbody>
+      {% for asset in assets: %}
+        <tr>
+          <td>{{ asset["asset_name"] }}</td>
+          <td>
+            {% if asset["irr"]: %}
+              {{ "%.2f" | format(100 * asset["irr"]) }}%
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}

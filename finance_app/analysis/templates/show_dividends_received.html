@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}
+  Dividends
+{% endblock title %}
+{% block main %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount received</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set ns = namespace(total=0, currency="") %}
+      {% for div in dividends: %}
+        <tr>
+          <td>{{ div["date"] | format_date }}</td>
+          <td>{{ div["amount_received"] | format_currency(div["currency"]) }}</td>
+        </tr>
+        {% set ns.total = ns.total + div["amount_received"] %}
+        {% set ns.currency = div["currency"] %}
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th class="border-0 text-end">Total</th>
+        <td class="border-0">{{ ns.total | format_currency(ns.currency) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+{% endblock main %}

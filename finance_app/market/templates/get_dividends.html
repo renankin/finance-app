@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}
+  Fetch dividends
+{% endblock title %}
+{% block main %}
+  <table class="table table-borderless">
+    {% for asset in assets %}
+      <tr>
+        <td>{{ asset["asset_name"] }}</td>
+        <td>
+          <form action="{{ url_for('market.show_dividends', asset_id=asset['asset_id']) }}"
+                method="get">
+            <button type="input" class="btn btn-primary">Show dividends</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{ url_for('market.add_dividends', asset_id=asset['asset_id']) }}"
+                method="post">
+            <button type="input" class="btn btn-primary">Add dividends</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{ url_for('market.delete_dividends', asset_id=asset['asset_id']) }}"
+                method="post">
+            <button type="input" class="btn btn-primary">Delete dividends</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock main %}
