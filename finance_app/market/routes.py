@@ -6,6 +6,14 @@ from finance_app.market import repository as market
 market_bp = Blueprint("market", __name__, template_folder="templates")
 
 
+
+@market_bp.route("/market")
+def index():
+    """Defines sources for market."""
+
+    return render_template("define_sources.html")
+
+
 @market_bp.route("/market/dividends")
 def get_dividends():
     """Get dividends for assets."""

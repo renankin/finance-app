@@ -85,6 +85,8 @@ def get_irr_for_asset(asset_id: int) -> float | None:
             ]
             cashflow.append(price_value[0] * total_shares)
             dates.append(price_date)
+        else:
+            return None
 
     elapsed_years = [(date - min(dates)).days / 365 for date in dates]
     holding_period = (dt.datetime.now().date() - min(dates)).days

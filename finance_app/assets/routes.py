@@ -10,7 +10,7 @@ assets_bp = Blueprint("assets", __name__, template_folder="templates")
 
 @assets_bp.route("/assets")
 def index():
-    """Show list of assets currently in account."""
+    """Show list of assets in account."""
 
     if not accounts.get_all_accounts():
         return redirect(url_for("accounts.index"))
