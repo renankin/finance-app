@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}
+  Add new source
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for(market.index) }}" method="post">
+    <input name="source_name" type="text" />
+    <button type="submit" class="btn btn-primary">Insert</button>
+  </form>
+{% endblock main %}

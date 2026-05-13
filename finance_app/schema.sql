@@ -35,14 +35,14 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 
 -- Market data
-CREATE TABLE IF NOT EXISTS market_source (
-    market_source_id INTEGER PRIMARY KEY,
-    market_source_name TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS market_sources (
+    source_id INTEGER PRIMARY KEY,
+    source_name TEXT NOT NULL,
 
     -- Capabilities
     supports_prices INTEGER DEFAULT 1,
     supports_dividends INTEGER DEFAULT 0,
-    supports_stock_splits INTEGER DEFAULT 0,
+    supports_stock_splits INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS dividends (
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS prices (
     UNIQUE (date, asset_id)
 );
 
-CREATE TABLE IF NOT EXISTS  stock_splits (
+CREATE TABLE IF NOT EXISTS stock_splits (
     date DATE NOT NULL,
     asset_id INTEGER NOT NULL,
     split_ratio FLOAT NOT NULL,

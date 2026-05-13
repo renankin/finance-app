@@ -11,7 +11,9 @@ market_bp = Blueprint("market", __name__, template_folder="templates")
 def index():
     """Defines sources for market."""
 
-    return render_template("define_sources.html")
+    s = market.get_market_sources()
+
+    return render_template("market_sources.html", market_sources=s)
 
 
 @market_bp.route("/market/dividends")

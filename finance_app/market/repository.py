@@ -2,6 +2,7 @@ from finance_app.db import execute_db, query_db
 from finance_app.market.fetchers import tesouro_fetcher, yfinance_fetcher
 from finance_app.assets import repository as assets
 
+
 def delete_dividends_for_asset(asset_id: int) -> bool:
     """Deletes dividends from database and returns True if successful"""
 
@@ -54,6 +55,20 @@ def get_dividends_for_asset(asset_id: int) -> list:
 
     if divs:
         return divs
+
+    return []
+
+
+def get_market_sources() -> list:
+    """Fetch market sources from database and return a list of dictionaries with
+    `source_name` keys."""
+
+    query = "SELECT source_name FROM market_sources "
+
+    sources = query_db(query)
+
+    if sources:
+        return sources
 
     return []
 
