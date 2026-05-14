@@ -3,16 +3,23 @@
   Market sources
 {% endblock title %}
 {% block main %}
-  <table>
+  <a href="{{ url_for('market.add') }}">Add new source</a>
+  <table class="table">
     <thead>
       <tr>
         <th>Source name</th>
+        <th>Support prices</th>
+        <th>Support dividends</th>
+        <th>Support stock splits</th>
       </tr>
     </thead>
     <tbody>
       {% for source in market_sources: %}
         <tr>
-          <td>{{ source["source_name"] }}></td>
+          <td>{{ source["source_name"] }}</td>
+          <td>{{ source["supports_prices"] }}</td>
+          <td>{{ source["supports_dividends"] }}</td>
+          <td>{{ source["supports_stock_splits"] }}</td>
         </tr>
       {% endfor %}
     </tbody>

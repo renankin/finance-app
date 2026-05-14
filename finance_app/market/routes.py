@@ -1,10 +1,9 @@
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, request, render_template, url_for
 
 from finance_app.assets import repository as assets
 from finance_app.market import repository as market
 
 market_bp = Blueprint("market", __name__, template_folder="templates")
-
 
 
 @market_bp.route("/market")
@@ -14,6 +13,23 @@ def index():
     s = market.get_market_sources()
 
     return render_template("market_sources.html", market_sources=s)
+
+
+@market_bp.route("/market/add/", methods=["GET", "POST"])
+def add():
+    """Add new source."""
+
+    if request.method == "POST":
+        source_name = request.form.get("source_name")
+        p = request.form.get("supports_prices", type=bool)
+        d = request.form.get("supports_dividends", type=bool)
+        s = request.form.get("supports_stocks_splits", type=bool)
+
+        market.insert_market_source(source_name, p, d, s)
+        flash("Source added.")
+        return redirect(url_for("market.index"))
+
+    return render_template("add_new_source.html")
 
 
 @market_bp.route("/market/dividends")

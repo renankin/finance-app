@@ -63,7 +63,10 @@ def get_market_sources() -> list:
     """Fetch market sources from database and return a list of dictionaries with
     `source_name` keys."""
 
-    query = "SELECT source_name FROM market_sources "
+    query = (
+        "SELECT source_name, supports_prices, supports_dividends, supports_stock_splits"
+        " FROM market_sources"
+    )
 
     sources = query_db(query)
 
@@ -112,7 +115,7 @@ def get_splits_for_asset(asset_id: int) -> list:
 
 
 def insert_dividends_for_asset(asset_id: int) -> bool:
-    """Insert dividends for stock in database and returns True if successful"""
+    """Insert dividends for stock in database and returns True if successful."""
 
     asset = assets.get_asset_by_id(asset_id)
 
@@ -134,6 +137,26 @@ def insert_dividends_for_asset(asset_id: int) -> bool:
             return True
 
     return False
+
+
+def insert_market_source(
+    source_name: str,
+    supports_prices: bool,
+    supports_dividends: bool,
+    supports_stock_splits: bool,
+) -> bool:
+    """Insert new market source in database and returns True if successful."""
+
+    statement = "INSERT INTO market_sources (source_name) VALUES (?)"
+
+    if supports_prices:
+        pass
+        
+    
+    
+    execute_db("INSERT INTO market_sources (source_name) VALUES (?)", (source_name,))
+
+    return True
 
 
 def insert_splits_for_asset(asset_id: int) -> bool:
