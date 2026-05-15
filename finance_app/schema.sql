@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 -- Market data
 CREATE TABLE IF NOT EXISTS market_sources (
     source_id INTEGER PRIMARY KEY,
-    source_name TEXT NOT NULL,
+    source_name TEXT NOT NULL UNIQUE,
 
     -- Capabilities
     supports_prices INTEGER DEFAULT 1,

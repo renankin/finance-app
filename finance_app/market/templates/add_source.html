@@ -3,7 +3,7 @@
   Add new source
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('market.add') }}" method="post">
+  <form action="{{ url_for('market.add_source') }}" method="post">
     <p>
       <input placeholder="Source name" name="source_name" type="text" />
     </p>

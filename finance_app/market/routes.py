@@ -6,30 +6,84 @@ from finance_app.market import repository as market
 market_bp = Blueprint("market", __name__, template_folder="templates")
 
 
-@market_bp.route("/market")
-def index():
-    """Defines sources for market."""
-
-    s = market.get_market_sources()
-
-    return render_template("market_sources.html", market_sources=s)
+###### Market source routes ######
 
 
-@market_bp.route("/market/add/", methods=["GET", "POST"])
-def add():
+@market_bp.route("/market/sources")
+def get_sources():
+    """Get market sources and display them in a table."""
+
+    s = market.get_all_sources()
+
+    return render_template("get_sources.html", market_sources=s)
+
+
+@market_bp.route("/market/sources/add", methods=["GET", "POST"])
+def add_source():
     """Add new source."""
 
     if request.method == "POST":
         source_name = request.form.get("source_name")
         p = request.form.get("supports_prices", type=bool)
         d = request.form.get("supports_dividends", type=bool)
-        s = request.form.get("supports_stocks_splits", type=bool)
+        s = request.form.get("supports_splits", type=bool)
 
-        market.insert_market_source(source_name, p, d, s)
-        flash("Source added.")
-        return redirect(url_for("market.index"))
+        if market.insert_source(source_name, p, d, s):
+            flash("Source added.")
+            return redirect(url_for("market.index"))
 
-    return render_template("add_new_source.html")
+    return render_template("add_source.html")
+
+
+@market_bp.route("/market/sources/delete/<int:source_id>", methods=["POST"])
+def delete_source(source_id):
+    """Deletes source from database."""
+
+    if market.delete_source(source_id):
+        flash("Source deleted.")
+    else:
+        flash("Failed to delete source.")
+
+    return redirect(url_for("market.get_sources"))
+
+
+@market_bp.route("/market/sources/edit/<int:source_id>", methods=["GET", "POST"])
+def update_source(source_id):
+    """Edits source."""
+
+    s = market.get_source_by_id(source_id)
+
+    if request.method == "POST":
+        source_name = request.form.get("source_name")
+        supports_prices = request.form.get("supports_prices", type=bool)
+        supports_dividends = request.form.get("supports_dividends", type=bool)
+        supports_splits = request.form.get("supports_splits", type=bool)
+
+        if market.update_source(
+            source_id, source_name, supports_prices, supports_dividends, supports_splits
+        ):
+            flash("Source updated.")
+        else:
+            flash("Failed to update source.")
+
+        return redirect(url_for("market.get_sources"))
+
+    return render_template("update_source.html", source=s)
+
+
+######## Dividends routes ########
+
+
+@market_bp.route("/market/dividends/add/<int:asset_id>", methods=["POST"])
+def add_dividends(asset_id):
+
+    if market.insert_dividends_for_asset(asset_id):
+        flash("Dividends added.")
+
+    else:
+        flash("Failed to load dividends.")
+
+    return redirect(url_for("market.get_dividends"))
 
 
 @market_bp.route("/market/dividends")
@@ -45,68 +99,6 @@ def get_dividends():
     return render_template("get_dividends.html", assets=a)
 
 
-@market_bp.route("/market/prices")
-def get_prices():
-    """Get prices for assets."""
-
-    a = assets.get_all_assets()
-
-    if not a:
-        flash("Must add asset first.")
-        return redirect(url_for("assets.add"))
-
-    return render_template("get_prices.html", assets=a)
-
-
-@market_bp.route("/market/splits")
-def get_splits():
-    """Get splits for assets."""
-
-    a = assets.get_all_assets()
-
-    if not a:
-        flash("Must add asset first.")
-        return redirect(url_for("assets.add"))
-
-    return render_template("get_splits.html", assets=a)
-
-
-@market_bp.route("/market/dividends/add/<int:asset_id>", methods=["POST"])
-def add_dividends(asset_id):
-
-    if market.insert_dividends_for_asset(asset_id):
-        flash("Dividends added.")
-
-    else:
-        flash("Failed to load dividends.")
-
-    return redirect(url_for("market.get_dividends"))
-
-
-@market_bp.route("/market/prices/add/<int:asset_id>", methods=["POST"])
-def add_prices(asset_id):
-    """Insert prices for asset."""
-
-    if market.insert_prices_for_asset(asset_id):
-        flash("Prices added.")
-    else:
-        flash("Failed to add prices.")
-
-    return redirect(url_for("market.get_prices"))
-
-
-@market_bp.route("/market/splits/add/<int:asset_id>", methods=["POST"])
-def add_splits(asset_id):
-    """Insert splits for asset."""
-
-    if market.insert_splits_for_asset(asset_id):
-        flash("Splits added.")
-    else:
-        flash("Failed to add splits.")
-
-    return redirect(url_for("market.get_splits"))
-
-
 @market_bp.route("/market/dividends/delete/<int:asset_id>", methods=["POST"])
 def delete_dividends(asset_id):
     """Delete dividends for asset."""
@@ -117,30 +109,6 @@ def delete_dividends(asset_id):
         flash("Failed to delete dividends.")
 
     return redirect(url_for("market.get_dividends"))
-
-
-@market_bp.route("/market/prices/delete/<int:asset_id>", methods=["POST"])
-def delete_prices(asset_id):
-    """Deletes prices from asset."""
-
-    if market.delete_prices_for_asset(asset_id):
-        flash("Prices deleted.")
-    else:
-        flash("Failed to delete prices.")
-
-    return redirect(url_for("market.get_prices"))
-
-
-@market_bp.route("/market/splits/<int:asset_id>", methods=["POST"])
-def delete_splits(asset_id):
-    """Deletes stock splits from asset."""
-
-    if market.delete_splits_for_asset(asset_id):
-        flash("Splits deleted.")
-    else:
-        flash("No splits to delete.")
-
-    return redirect(url_for("market.get_splits"))
 
 
 @market_bp.route("/market/dividends/<int:asset_id>")
@@ -156,6 +124,46 @@ def show_dividends(asset_id):
     return redirect(url_for("market.get_dividends"))
 
 
+####### Price routes #######
+
+
+@market_bp.route("/market/prices/add/<int:asset_id>", methods=["POST"])
+def add_prices(asset_id):
+    """Insert prices for asset."""
+
+    if market.insert_prices_for_asset(asset_id):
+        flash("Prices added.")
+    else:
+        flash("Failed to add prices.")
+
+    return redirect(url_for("market.get_prices"))
+
+
+@market_bp.route("/market/prices/delete/<int:asset_id>", methods=["POST"])
+def delete_prices(asset_id):
+    """Deletes prices from asset."""
+
+    if market.delete_prices_for_asset(asset_id):
+        flash("Prices deleted.")
+    else:
+        flash("Failed to delete prices.")
+
+    return redirect(url_for("market.get_prices"))
+
+
+@market_bp.route("/market/prices")
+def get_prices():
+    """Get prices for assets."""
+
+    a = assets.get_all_assets()
+
+    if not a:
+        flash("Must add asset first.")
+        return redirect(url_for("assets.add"))
+
+    return render_template("get_prices.html", assets=a)
+
+
 @market_bp.route("/market/prices/<int:asset_id>")
 def show_prices(asset_id):
     """Show prices for asset."""
@@ -167,6 +175,46 @@ def show_prices(asset_id):
 
     flash("No prices to show.")
     return redirect(url_for("market.get_prices"))
+
+
+####### Stock splits routes #######
+
+
+@market_bp.route("/market/splits/add/<int:asset_id>", methods=["POST"])
+def add_splits(asset_id):
+    """Insert splits for asset."""
+
+    if market.insert_splits_for_asset(asset_id):
+        flash("Splits added.")
+    else:
+        flash("Failed to add splits.")
+
+    return redirect(url_for("market.get_splits"))
+
+
+@market_bp.route("/market/splits/<int:asset_id>", methods=["POST"])
+def delete_splits(asset_id):
+    """Deletes stock splits from asset."""
+
+    if market.delete_splits_for_asset(asset_id):
+        flash("Splits deleted.")
+    else:
+        flash("No splits to delete.")
+
+    return redirect(url_for("market.get_splits"))
+
+
+@market_bp.route("/market/splits")
+def get_splits():
+    """Get splits for assets."""
+
+    a = assets.get_all_assets()
+
+    if not a:
+        flash("Must add asset first.")
+        return redirect(url_for("assets.add"))
+
+    return render_template("get_splits.html", assets=a)
 
 
 @market_bp.route("/market/splits/<int:asset_id>")
