@@ -59,6 +59,15 @@ def update_source(source_id):
         supports_dividends = request.form.get("supports_dividends", type=bool)
         supports_splits = request.form.get("supports_splits", type=bool)
 
+        if not supports_prices:
+            supports_prices = False
+
+        if not supports_dividends:
+            supports_dividends = False
+
+        if not supports_splits:
+            supports_splits = False
+
         if market.update_source(
             source_id, source_name, supports_prices, supports_dividends, supports_splits
         ):

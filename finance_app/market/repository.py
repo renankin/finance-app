@@ -13,7 +13,7 @@ def get_all_sources() -> list:
     query = (
         "SELECT source_id, source_name, supports_prices,"
         " supports_dividends, supports_stock_splits"
-        " FROM market_sources"
+        " FROM market"
     )
 
     sources = query_db(query)
@@ -31,7 +31,7 @@ def get_source_by_id(source_id: int) -> dict:
     query = (
         "SELECT source_id, source_name, supports_prices,"
         " supports_dividends, supports_stock_splits"
-        " FROM market_sources WHERE source_id = ?"
+        " FROM market WHERE source_id = ?"
     )
 
     source = query_db(query, (source_id,), one=True)
@@ -52,19 +52,10 @@ def update_source(
     """Edits source and returns `True` if successful."""
 
     statement = (
-        "UPDATE market_sources SET source_name = ?, supports_dividends = ?, "
+        "UPDATE market SET source_name = ?, supports_dividends = ?, "
         " supports_prices = ?, supports_stock_splits = ? "
         " WHERE source_id = ?"
     )
-
-    if not supports_prices:
-        supports_prices = False
-
-    if not supports_dividends:
-        supports_dividends = False
-
-    if not supports_splits:
-        supports_splits = False
 
     if get_source_by_id(source_id):
         execute_db(
@@ -79,7 +70,7 @@ def update_source(
         )
 
         return True
-    
+
     return False
 
 
@@ -101,7 +92,7 @@ def insert_source(
         supports_stock_splits = False
 
     statement = (
-        "INSERT INTO market_sources"
+        "INSERT INTO market"
         " (source_name, supports_prices, supports_dividends, supports_stock_splits)"
         " VALUES (?, ?, ?, ?)"
     )
@@ -118,7 +109,7 @@ def delete_source(source_id: int) -> bool:
     """Delete source by id and return True if successful."""
 
     if get_source_by_id(source_id):
-        execute_db("DELETE FROM market_sources WHERE source_id = ?", (source_id,))
+        execute_db("DELETE FROM market WHERE source_id = ?", (source_id,))
         return True
 
     return False

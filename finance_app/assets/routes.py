@@ -18,7 +18,7 @@ def index():
     a = assets.get_all_assets()
 
     if a:
-        return render_template("assets.html", assets=a)
+        return render_template("read_assets.html", assets=a)
 
     flash("No assets to show. Must add asset first.")
     return redirect(url_for("assets.add"))
@@ -51,17 +51,26 @@ def add():
 def edit(asset_id):
     """Edit asset."""
 
+    a = assets.get_asset_by_id(asset_id)
+
+    s = market.get_all_sources()
+
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
-        asset_type = request.form.get("asset_type")
-        still_open = request.form.get("still_open", type=int)
+        market_source_id = request.form.get("market_source_id", type=int)
+        still_open = request.form.get("still_open", type=bool)
 
-        assets.update_asset(asset_id, account_id, asset_name, asset_type, still_open)
+        if not still_open:
+            still_open = False
+
+        assets.update_asset(
+            asset_id, account_id, asset_name, market_source_id, still_open
+        )
         flash("Asset updated.")
         return redirect(url_for("assets.index"))
 
-    return render_template("edit_asset.html", asset=assets.get_asset_by_id(asset_id))
+    return render_template("edit_asset.html", asset=a, market_sources=s)
 
 
 @assets_bp.route("/assets/delete/<int:asset_id>", methods=["POST"])
@@ -71,7 +80,7 @@ def delete(asset_id):
     if transactions.get_transactions_from_asset(asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
-    
+
     if market.get_prices_for_asset(asset_id):
         flash("Must delete prices first.")
         return redirect(url_for("assets.index"))
@@ -79,11 +88,11 @@ def delete(asset_id):
     if market.get_dividends_for_asset(asset_id):
         flash("Must delete dividends first.")
         return redirect(url_for("assets.index"))
-    
+
     if market.get_splits_for_asset(asset_id):
         flash("Must delete splits first.")
         return redirect(url_for("assets.index"))
-    
+
     assets.delete_asset(asset_id)
     flash("Asset deleted.")
 

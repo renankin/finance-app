@@ -9,7 +9,7 @@
       <tr>
         <th>Asset name</th>
         <th>Account name</th>
-        <th>Asset type</th>
+        <th>Market source</th>
         <th>Position open</th>
       </tr>
     </thead>
@@ -18,13 +18,11 @@
         <tr>
           <td>{{ asset["asset_name"] }}</td>
           <td>{{ asset["account_name"] }}</td>
-          <td>{{ asset["asset_type"] | capitalize }}</td>
+          <td>{{ asset["source_name"] }}</td>
           <td>
-            {% if asset["still_open"] == 1: %}
-              Yes
-            {% else: %}
-              No
-            {% endif %}
+            <input type="checkbox"
+                   disabled
+                   {% if asset["still_open"] %}checked{% endif %}>
           </td>
           <td>
             <form action="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}"

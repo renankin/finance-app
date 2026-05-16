@@ -9,18 +9,10 @@ CREATE TABLE IF NOT EXISTS  accounts (
 CREATE TABLE IF NOT EXISTS assets (
     asset_id INTEGER PRIMARY KEY,
     asset_name TEXT NOT NULL UNIQUE,
-    asset_type TEXT NOT NULL,
+    market_source_id INTEGER NOT NULL,
     account_id INTEGER NOT NULL,
     still_open INTEGER NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts(account_id)
-);
-
-CREATE TABLE IF NOT EXISTS asset_type (
-    asset_type_id INTEGER PRIMARY KEY,
-    asset_type_name TEXT NOT NULL UNIQUE,
-    asset_id INTEGER NOT NULL,
-    market_source_id INTEGER NOT NULL,
-    FOREIGN KEY (asset_id) REFERENCES assets(asset_id)
     FOREIGN KEY (market_source_id) REFERENCES market_source(market_source_id)
 );
 
@@ -35,7 +27,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 
 -- Market data
-CREATE TABLE IF NOT EXISTS market_sources (
+CREATE TABLE IF NOT EXISTS market (
     source_id INTEGER PRIMARY KEY,
     source_name TEXT NOT NULL UNIQUE,
 
