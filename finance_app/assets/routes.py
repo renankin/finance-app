@@ -2,7 +2,7 @@ from flask import Blueprint, flash, request, redirect, render_template, url_for
 
 from finance_app.accounts import repository as accounts
 from finance_app.assets import repository as assets
-from finance_app.market import repository as market
+from finance_app.market import sources, splits, dividends, prices
 from finance_app.transactions import repository as transactions
 
 assets_bp = Blueprint("assets", __name__, template_folder="templates")
@@ -53,7 +53,7 @@ def edit(asset_id):
 
     a = assets.get_asset_by_id(asset_id)
 
-    s = market.get_all_sources()
+    s = sources.get_all_sources()
 
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
@@ -81,15 +81,15 @@ def delete(asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
 
-    if market.get_prices_for_asset(asset_id):
+    if prices.get_prices_for_asset(asset_id):
         flash("Must delete prices first.")
         return redirect(url_for("assets.index"))
 
-    if market.get_dividends_for_asset(asset_id):
+    if dividends.get_dividends_for_asset(asset_id):
         flash("Must delete dividends first.")
         return redirect(url_for("assets.index"))
 
-    if market.get_splits_for_asset(asset_id):
+    if splits.get_splits_for_asset(asset_id):
         flash("Must delete splits first.")
         return redirect(url_for("assets.index"))
 

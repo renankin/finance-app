@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, request, render_template, url_for
 
 from finance_app.assets import repository as assets
-from finance_app.market import repository as market
+from finance_app.market import dividends, sources, prices, splits
 
 market_bp = Blueprint("market", __name__, template_folder="templates")
 
@@ -13,7 +13,7 @@ market_bp = Blueprint("market", __name__, template_folder="templates")
 def get_sources():
     """Get market sources and display them in a table."""
 
-    s = market.get_all_sources()
+    s = sources.get_all_sources()
 
     return render_template("get_sources.html", market_sources=s)
 
@@ -28,9 +28,18 @@ def add_source():
         d = request.form.get("supports_dividends", type=bool)
         s = request.form.get("supports_splits", type=bool)
 
-        if market.insert_source(source_name, p, d, s):
+        if not p:
+            p = False
+        if not d:
+            d = False
+        if not s:
+            s = False
+
+        if sources.insert_source(source_name, p, d, s):
             flash("Source added.")
             return redirect(url_for("market.index"))
+
+        flash("Failed to add source.")
 
     return render_template("add_source.html")
 
@@ -39,7 +48,7 @@ def add_source():
 def delete_source(source_id):
     """Deletes source from database."""
 
-    if market.delete_source(source_id):
+    if sources.delete_source(source_id):
         flash("Source deleted.")
     else:
         flash("Failed to delete source.")
@@ -51,26 +60,22 @@ def delete_source(source_id):
 def update_source(source_id):
     """Edits source."""
 
-    s = market.get_source_by_id(source_id)
+    s = sources.get_source_by_id(source_id)
 
     if request.method == "POST":
         source_name = request.form.get("source_name")
-        supports_prices = request.form.get("supports_prices", type=bool)
-        supports_dividends = request.form.get("supports_dividends", type=bool)
-        supports_splits = request.form.get("supports_splits", type=bool)
+        p = request.form.get("supports_prices", type=bool)
+        d = request.form.get("supports_dividends", type=bool)
+        s = request.form.get("supports_splits", type=bool)
 
-        if not supports_prices:
-            supports_prices = False
+        if not p:
+            p = False
+        if not d:
+            d = False
+        if not s:
+            s = False
 
-        if not supports_dividends:
-            supports_dividends = False
-
-        if not supports_splits:
-            supports_splits = False
-
-        if market.update_source(
-            source_id, source_name, supports_prices, supports_dividends, supports_splits
-        ):
+        if sources.update_source(source_id, source_name, p, d, s):
             flash("Source updated.")
         else:
             flash("Failed to update source.")
@@ -86,7 +91,7 @@ def update_source(source_id):
 @market_bp.route("/market/dividends/add/<int:asset_id>", methods=["POST"])
 def add_dividends(asset_id):
 
-    if market.insert_dividends_for_asset(asset_id):
+    if dividends.insert_dividends_for_asset(asset_id):
         flash("Dividends added.")
 
     else:
@@ -112,7 +117,7 @@ def get_dividends():
 def delete_dividends(asset_id):
     """Delete dividends for asset."""
 
-    if market.delete_dividends_for_asset(asset_id):
+    if dividends.delete_dividends_for_asset(asset_id):
         flash("Dividends deleted.")
     else:
         flash("Failed to delete dividends.")
@@ -124,10 +129,10 @@ def delete_dividends(asset_id):
 def show_dividends(asset_id):
     """Show dividends for asset."""
 
-    dividends = market.get_dividends_for_asset(asset_id)
+    divs = dividends.get_dividends_for_asset(asset_id)
 
-    if dividends:
-        return render_template("show_dividends.html", dividends=dividends)
+    if divs:
+        return render_template("show_dividends.html", dividends=divs)
 
     flash("No dividends to show.")
     return redirect(url_for("market.get_dividends"))
@@ -140,7 +145,7 @@ def show_dividends(asset_id):
 def add_prices(asset_id):
     """Insert prices for asset."""
 
-    if market.insert_prices_for_asset(asset_id):
+    if prices.insert_prices_for_asset(asset_id):
         flash("Prices added.")
     else:
         flash("Failed to add prices.")
@@ -152,7 +157,7 @@ def add_prices(asset_id):
 def delete_prices(asset_id):
     """Deletes prices from asset."""
 
-    if market.delete_prices_for_asset(asset_id):
+    if prices.delete_prices_for_asset(asset_id):
         flash("Prices deleted.")
     else:
         flash("Failed to delete prices.")
@@ -177,10 +182,10 @@ def get_prices():
 def show_prices(asset_id):
     """Show prices for asset."""
 
-    prices = market.get_prices_for_asset(asset_id)
+    p = prices.get_prices_for_asset(asset_id)
 
-    if prices:
-        return render_template("show_prices.html", prices=prices)
+    if p:
+        return render_template("show_prices.html", prices=p)
 
     flash("No prices to show.")
     return redirect(url_for("market.get_prices"))
@@ -193,7 +198,7 @@ def show_prices(asset_id):
 def add_splits(asset_id):
     """Insert splits for asset."""
 
-    if market.insert_splits_for_asset(asset_id):
+    if splits.insert_splits_for_asset(asset_id):
         flash("Splits added.")
     else:
         flash("Failed to add splits.")
@@ -205,7 +210,7 @@ def add_splits(asset_id):
 def delete_splits(asset_id):
     """Deletes stock splits from asset."""
 
-    if market.delete_splits_for_asset(asset_id):
+    if splits.delete_splits_for_asset(asset_id):
         flash("Splits deleted.")
     else:
         flash("No splits to delete.")
@@ -230,10 +235,10 @@ def get_splits():
 def show_splits(asset_id):
     """Show stock splits for asset."""
 
-    splits = market.get_splits_for_asset(asset_id)
+    s = splits.get_splits_for_asset(asset_id)
 
-    if splits:
-        return render_template("show_splits.html", splits=splits)
+    if s:
+        return render_template("show_splits.html", splits=s)
 
     flash("No splits to show.")
     return redirect(url_for("market.get_splits"))

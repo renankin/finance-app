@@ -3,7 +3,7 @@ import datetime as dt
 
 from finance_app.assets import repository as assets
 from finance_app.transactions import repository as transactions
-from finance_app.market import repository as market
+from finance_app.market import dividends, splits, prices
 
 
 def adjust_transactions(asset_id: int) -> list:
@@ -12,11 +12,11 @@ def adjust_transactions(asset_id: int) -> list:
 
     t = transactions.get_transactions_from_asset(asset_id)
 
-    splits = market.get_splits_for_asset(asset_id)
+    s = splits.get_splits_for_asset(asset_id)
 
     for transaction in t:
         transaction["adjusted"] = "No"
-        for split in splits:
+        for split in s:
             if transaction["date"] <= split["date"]:
                 transaction["shares"] *= split["split_ratio"]
                 transaction["price"] /= split["split_ratio"]
@@ -29,11 +29,11 @@ def get_dividends_received(asset_id: int) -> list:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
 
-    divs = market.get_dividends_for_asset(asset_id)
+    divs = dividends.get_dividends_for_asset(asset_id)
 
     t = transactions.get_transactions_from_asset(asset_id)
 
-    dividends = []
+    d = []
 
     for div in divs:
         # Find how many stocks we had on that dividend date
@@ -47,11 +47,11 @@ def get_dividends_received(asset_id: int) -> list:
 
         if div_received:
             value = shares * div["dividend_value"]
-            dividends.append(
+            d.append(
                 {"date": div["date"], "amount_received": value, "currency": currency}
             )
 
-    return dividends
+    return d
 
 
 def get_irr_for_asset(asset_id: int) -> float | None:
@@ -77,11 +77,11 @@ def get_irr_for_asset(asset_id: int) -> float | None:
 
     a = assets.get_asset_by_id(asset_id)
     if a["still_open"]:
-        prices = market.get_prices_for_asset(asset_id)
-        if prices:
-            price_date = max([price["date"] for price in prices])
+        p = prices.get_prices_for_asset(asset_id)
+        if p:
+            price_date = max([price["date"] for price in p])
             price_value = [
-                price["unit_price"] for price in prices if price["date"] == price_date
+                price["unit_price"] for price in p if price["date"] == price_date
             ]
             cashflow.append(price_value[0] * total_shares)
             dates.append(price_date)
