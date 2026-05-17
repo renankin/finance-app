@@ -1,16 +1,7 @@
 from finance_app.db import execute_db, query_db
 from finance_app.assets import repository as assets
 
-
-def get_dividends_from_source(asset_name: str, source_name: str) -> dict:
-    """Get divindeds from source if it exists."""
-
-    if source_name == "yfinance":
-        from finance_app.market.fetchers import yfinance_fetcher
-
-        return yfinance_fetcher.get_dividends(asset_name)
-
-    return {}
+from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
 
 def get_dividends_for_asset(asset_id: int) -> list:
@@ -50,7 +41,9 @@ def insert_dividends_for_asset(asset_id: int) -> bool:
 
     a = assets.get_asset_by_id(asset_id)
 
-    dividends = get_dividends_from_source(a["asset_name"], a["source_name"])
+    fetcher = FetcherProtocol(a["source_name"])
+
+    dividends = fetcher.fetch_dividends(a["asset_name"])
 
     if dividends:
         args = []

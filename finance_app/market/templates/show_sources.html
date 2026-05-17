@@ -17,9 +17,9 @@
       {% for source in market_sources: %}
         <tr>
           <td>{{ source["source_name"] }}</td>
-          <td>{{ source["supports_prices"] }}</td>
-          <td>{{ source["supports_dividends"] }}</td>
-          <td>{{ source["supports_stock_splits"] }}</td>
+          <td><input type="checkbox" disabled {% if source["supports_prices"] %}checked {% endif %}</td>
+          <td><input type="checkbox" disabled {% if source["supports_dividends"] %}checked {% endif %}</td>
+          <td><input type="checkbox" disabled {% if source["supports_stock_splits"] %}checked {% endif %}</td>
           <td>
             <form action="{{ url_for('market.update_source', source_id=source['source_id']) }}"
                   method="get">

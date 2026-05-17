@@ -1,18 +1,7 @@
 from finance_app.db import execute_db, query_db
-from finance_app.market.fetchers import yfinance_fetcher
 from finance_app.assets import repository as assets
 
-
-def get_splits_from_source(asset_name: str, source_name: str) -> dict:
-    """Get stocks splits from source if it exists."""
-
-    if source_name == "yfinance":
-        from finance_app.market.fetchers import yfinance_fetcher
-
-        return yfinance_fetcher.get_splits(asset_name)
-
-    return {}
-
+from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
 def get_splits_for_asset(asset_id: int) -> list:
     """Fetch splits from database and returns a list of dictionaries containing `date`
@@ -49,7 +38,9 @@ def insert_splits_for_asset(asset_id: int) -> bool:
 
     asset = assets.get_asset_by_id(asset_id)
 
-    splits = yfinance_fetcher.get_splits(asset["asset_name"])
+    fetcher = FetcherProtocol(asset["source_name"])
+
+    splits = fetcher.fetch_stock_splits(asset["asset_name"])
 
     if splits:
         args = []

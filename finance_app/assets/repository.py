@@ -69,7 +69,7 @@ def insert_asset(
     """Insert into assets."""
 
     query = (
-        "INSERT INTO assets (account_id, asset_name, asset_type, still_open)"
+        "INSERT INTO assets (account_id, asset_name, market_source_id, still_open)"
         " VALUES (?, ?, ?, ?)"
     )
 

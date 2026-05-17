@@ -1,22 +1,7 @@
 from finance_app.db import execute_db, query_db
-
 from finance_app.assets import repository as assets
 
-
-def get_prices_from_source(asset_name: str, source_name: str) -> dict:
-    """Fetch prices from source if the source exists"""
-
-    if source_name == "yfinance":
-        from finance_app.market.fetchers import yfinance_fetcher
-
-        return yfinance_fetcher.get_prices(asset_name)
-
-    if source_name == "tesouro_website":
-        from finance_app.market.fetchers import tesouro_fetcher
-
-        return tesouro_fetcher.get_prices(asset_name)
-
-    return {}
+from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
 
 def get_prices_for_asset(asset_id: int) -> list:
@@ -56,7 +41,9 @@ def insert_prices_for_asset(asset_id: int) -> bool:
 
     asset = assets.get_asset_by_id(asset_id)
 
-    prices = get_prices_from_source(asset["asset_name"], asset["source_name"])
+    fetcher = FetcherProtocol(asset["source_name"])
+
+    prices = fetcher.fetch_prices(asset["asset_name"])
 
     if prices:
         args = []

@@ -2,7 +2,12 @@ from flask import Blueprint, flash, request, redirect, render_template, url_for
 
 from finance_app.accounts import repository as accounts
 from finance_app.assets import repository as assets
-from finance_app.market import sources, splits, dividends, prices
+from finance_app.market import (
+    market_dividends,
+    market_prices,
+    market_sources,
+    market_splits,
+)
 from finance_app.transactions import repository as transactions
 
 assets_bp = Blueprint("assets", __name__, template_folder="templates")
@@ -30,6 +35,8 @@ def add():
 
     a = accounts.get_all_accounts()
 
+    s = market_sources.get_all_sources()
+
     if not a:
         flash("No accounts. Must add account first.")
         return redirect(url_for("accounts.add"))
@@ -37,14 +44,14 @@ def add():
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
-        asset_type = request.form.get("asset_type")
+        market_source_id = request.form.get("market_source_id", type=int)
         still_open = request.form.get("still_open", type=int)
 
-        assets.insert_asset(account_id, asset_name, asset_type, still_open)
+        assets.insert_asset(account_id, asset_name, market_source_id, still_open)
         flash("Asset added.")
         return redirect(url_for("assets.index"))
 
-    return render_template("add_asset.html", accounts=a)
+    return render_template("add_asset.html", accounts=a, sources=s)
 
 
 @assets_bp.route("/assets/edit/<int:asset_id>", methods=["POST", "GET"])
@@ -53,7 +60,7 @@ def edit(asset_id):
 
     a = assets.get_asset_by_id(asset_id)
 
-    s = sources.get_all_sources()
+    s = market_sources.get_all_sources()
 
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
@@ -81,15 +88,15 @@ def delete(asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
 
-    if prices.get_prices_for_asset(asset_id):
+    if market_prices.get_prices_for_asset(asset_id):
         flash("Must delete prices first.")
         return redirect(url_for("assets.index"))
 
-    if dividends.get_dividends_for_asset(asset_id):
+    if market_dividends.get_dividends_for_asset(asset_id):
         flash("Must delete dividends first.")
         return redirect(url_for("assets.index"))
 
-    if splits.get_splits_for_asset(asset_id):
+    if market_splits.get_splits_for_asset(asset_id):
         flash("Must delete splits first.")
         return redirect(url_for("assets.index"))
 

@@ -1,8 +1,9 @@
 import yfinance as yf
 
 
-def get_prices(symbol: str) -> dict:
-    """Get prices from yfinance"""
+def get_prices(symbol: str) -> list[dict]:
+    """Get prices from yfinance and returns a list of dictionaries containing
+    `date` and `price` keys"""
 
     history = yf.Ticker(symbol).history(period="max", auto_adjust=False)
 
@@ -12,13 +13,15 @@ def get_prices(symbol: str) -> dict:
     prices = []
 
     for index, row in history.iterrows():
-        prices.append({"date": index.date(), "price": float(row["Close"])})
+        if not row.isna().any():
+            prices.append({"date": index.date(), "price": float(row["Close"])})
 
     return prices
 
 
-def get_dividends(symbol: str) -> dict:
-    """Get dividends from yfinance"""
+def get_dividends(symbol: str) -> list[dict]:
+    """Get dividends from yfinance and returns a list of dictionaries containing
+    `date` and `dividend` keys"""
 
     divs = yf.Ticker(symbol).dividends
 
@@ -28,13 +31,15 @@ def get_dividends(symbol: str) -> dict:
     vals = []
 
     for index, div in divs.items():
-        vals.append({"date": index.date(), "dividend": float(div)})
+        if not div.isna().any():
+            vals.append({"date": index.date(), "dividend": float(div)})
 
     return vals
 
 
-def get_splits(symbol: str) -> dict:
-    """Get stock splits from yfinance"""
+def get_stock_splits(symbol: str) -> list[dict]:
+    """Get stock splits from yfinance and returns a list of dictionaries containing
+    `date` and `split_ratio` keys"""
 
     splits = yf.Ticker(symbol).splits
 
@@ -44,6 +49,7 @@ def get_splits(symbol: str) -> dict:
     vals = []
 
     for index, split_ratio in splits.items():
-        vals.append({"date": index.date(), "split_ratio": float(split_ratio)})
+        if not split_ratio.isna().any():
+            vals.append({"date": index.date(), "split_ratio": float(split_ratio)})
 
     return vals
