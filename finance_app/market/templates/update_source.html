@@ -6,7 +6,10 @@
   <form action="{{ url_for('market.update_source', source_id=source['source_id']) }}"
         method="post">
     <p>
-      <input value="{{ source['source_name'] }}" name="source_name" type="text" />
+      <input value="{{ source['display_name'] }}" name="source_name" type="text" />
+    </p>
+    <p>
+      <input value="{{ source['source_key'] }}" name="source_key" type="text" />
     </p>
     <p>
       Support prices

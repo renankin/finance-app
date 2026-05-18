@@ -7,7 +7,8 @@
   <table class="table table-borderless">
     <thead>
       <tr>
-        <th>Source name</th>
+        <th>Display name</th>
+        <th>Source key</th>
         <th>Support prices</th>
         <th>Support dividends</th>
         <th>Support stock splits</th>
@@ -16,7 +17,8 @@
     <tbody>
       {% for source in market_sources: %}
         <tr>
-          <td>{{ source["source_name"] }}</td>
+          <td>{{ source["display_name"] }}</td>
+          <td>{{ source["source_key"] }}</td>
           <td><input type="checkbox" disabled {% if source["supports_prices"] %}checked {% endif %}</td>
           <td><input type="checkbox" disabled {% if source["supports_dividends"] %}checked {% endif %}</td>
           <td><input type="checkbox" disabled {% if source["supports_stock_splits"] %}checked {% endif %}</td>

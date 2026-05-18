@@ -38,7 +38,7 @@ def insert_splits_for_asset(asset_id: int) -> bool:
 
     asset = assets.get_asset_by_id(asset_id)
 
-    fetcher = FetcherProtocol(asset["source_name"])
+    fetcher = FetcherProtocol(asset["source_key"])
 
     splits = fetcher.fetch_stock_splits(asset["asset_name"])
 

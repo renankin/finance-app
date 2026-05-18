@@ -41,7 +41,7 @@ def insert_dividends_for_asset(asset_id: int) -> bool:
 
     a = assets.get_asset_by_id(asset_id)
 
-    fetcher = FetcherProtocol(a["source_name"])
+    fetcher = FetcherProtocol(a["source_key"])
 
     dividends = fetcher.fetch_dividends(a["asset_name"])
 

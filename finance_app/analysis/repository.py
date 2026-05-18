@@ -6,7 +6,7 @@ from finance_app.transactions import repository as transactions
 from finance_app.market import market_dividends, market_prices, market_splits
 
 
-def adjust_transactions(asset_id: int) -> list:
+def get_adjusted_transactions(asset_id: int) -> list:
     """Adjust cashflow for assets when there are stock splits and returns a list of
     dictionaries containing `date`, `shares`, `price`, `currency` and `adjusted`."""
 
@@ -25,18 +25,23 @@ def adjust_transactions(asset_id: int) -> list:
     return t
 
 
-def get_dividends_received(asset_id: int) -> list:
+def get_dividends_received(asset_id: int) -> list[dict]:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
 
-    divs = market_dividends.get_dividends_for_asset(asset_id)
+    market_divs = market_dividends.get_dividends_for_asset(asset_id)
+    t = get_adjusted_transactions(asset_id)
 
-    t = transactions.get_transactions_from_asset(asset_id)
+    divs_received = []
+    for div in market_divs:
+        
+        a = assets.get_asset_by_id(asset_id)
+        if not a["still_open"]:
+            last_date = max([transaction["date"] for transaction in t])
+            if div["date"] >= last_date:
+                continue
 
-    d = []
-
-    for div in divs:
-        # Find how many stocks we had on that dividend date
+        # Find how many shares on that dividend date
         shares = 0
         div_received = False
         for transaction in t:
@@ -47,11 +52,11 @@ def get_dividends_received(asset_id: int) -> list:
 
         if div_received:
             value = shares * div["dividend_value"]
-            d.append(
+            divs_received.append(
                 {"date": div["date"], "amount_received": value, "currency": currency}
             )
 
-    return d
+    return divs_received
 
 
 def get_irr_for_asset(asset_id: int) -> float | None:
@@ -59,7 +64,10 @@ def get_irr_for_asset(asset_id: int) -> float | None:
     dividends and current valuation if position is still open.
     If holding period is less than a year returns `None`."""
 
-    t = adjust_transactions(asset_id)
+    t = get_adjusted_transactions(asset_id)
+
+    if not t:
+        return None
 
     cashflow = []
     dates = []

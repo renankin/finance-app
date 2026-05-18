@@ -28,7 +28,8 @@ def add_source():
     """Add new source."""
 
     if request.method == "POST":
-        source_name = request.form.get("source_name")
+        display_name = request.form.get("source_name")
+        source_key = request.form.get("source_key")
         p = request.form.get("supports_prices", type=bool)
         d = request.form.get("supports_dividends", type=bool)
         s = request.form.get("supports_splits", type=bool)
@@ -40,9 +41,9 @@ def add_source():
         if not s:
             s = False
 
-        if market_sources.insert_source(source_name, p, d, s):
+        if market_sources.insert_source(display_name, source_key, p, d, s):
             flash("Source added.")
-            return redirect(url_for("market.index"))
+            return redirect(url_for("market.show_sources"))
 
         flash("Failed to add source.")
 
@@ -52,13 +53,19 @@ def add_source():
 @market_bp.route("/market/sources/delete/<int:source_id>", methods=["POST"])
 def delete_source(source_id):
     """Deletes source from database."""
+    
+    a = assets.get_assets_from_source(source_id)
+
+    if a:
+        flash("Must delete assets first.")
+        return redirect(url_for("market.show_sources"))
 
     if market_sources.delete_source(source_id):
         flash("Source deleted.")
     else:
         flash("Failed to delete source.")
 
-    return redirect(url_for("market.get_sources"))
+    return redirect(url_for("market.show_sources"))
 
 
 @market_bp.route("/market/sources/edit/<int:source_id>", methods=["GET", "POST"])
@@ -68,7 +75,8 @@ def update_source(source_id):
     s = market_sources.get_source_by_id(source_id)
 
     if request.method == "POST":
-        source_name = request.form.get("source_name")
+        display_name = request.form.get("source_name")
+        source_key = request.form.get("source_key")
         p = request.form.get("supports_prices", type=bool)
         d = request.form.get("supports_dividends", type=bool)
         s = request.form.get("supports_splits", type=bool)
@@ -80,12 +88,12 @@ def update_source(source_id):
         if not s:
             s = False
 
-        if market_sources.update_source(source_id, source_name, p, d, s):
+        if market_sources.update_source(source_id, display_name, source_key, p, d, s):
             flash("Source updated.")
         else:
             flash("Failed to update source.")
 
-        return redirect(url_for("market.get_sources"))
+        return redirect(url_for("market.show_sources"))
 
     return render_template("update_source.html", source=s)
 

@@ -9,14 +9,15 @@ def delete_asset(asset_id: int):
 
 def get_all_assets() -> list:
     """Fetch assets from all accounts and returns a list of dictionaries containing
-    `asset_id`, `asset_name`, `account_name`, `source_name` and `still_open`."""
+    `asset_id`, `asset_name`, `account_name`, `source_display_name` and `still_open`."""
 
     query = (
-        "SELECT assets.asset_id, assets.asset_name, market.source_name,"
+        "SELECT assets.asset_id, assets.asset_name, "
+        " market_sources.display_name AS source_display_name,"
         " assets.still_open, accounts.account_name"
         " FROM assets"
         " JOIN accounts ON assets.account_id = accounts.account_id"
-        " JOIN market ON assets.market_source_id = market.source_id"
+        " JOIN market_sources ON assets.market_source_id = market_sources.source_id"
     )
 
     assets = query_db(query)
@@ -27,17 +28,31 @@ def get_all_assets() -> list:
     return []
 
 
+def get_assets_from_source(source_id: int) -> list:
+    """Fetches assets from database and returns a list of dictionaries containing `asset_id`."""
+
+    query = "SELECT asset_id FROM assets WHERE market_source_id = ?"
+
+    assets = query_db(query, (source_id,))
+
+    if assets:
+        return assets
+
+    return []
+
+
 def get_asset_by_id(asset_id: int) -> dict:
     """Fetch asset from database and returns a dictionary
-    containing `account_id`, `account_name`, `asset_id`, `asset_name`, `source_name` and
-    `still_open`."""
+    containing `account_id`, `account_name`, `asset_id`, `asset_name`,
+    `source_display_name` `source_key` and `still_open`."""
 
     query = (
         "SELECT assets.asset_id, accounts.account_id, assets.asset_name,"
-        " market.source_name, assets.still_open, accounts.account_name "
+        " market_sources.display_name AS source_display_name, market_sources.source_key,"
+        " assets.still_open, accounts.account_name"
         " FROM assets"
         " JOIN accounts ON assets.account_id = accounts.account_id"
-        " JOIN market ON assets.market_source_id = market.source_id"
+        " JOIN market_sources ON assets.market_source_id = market_sources.source_id"
         " WHERE assets.asset_id = ?"
     )
 

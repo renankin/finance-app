@@ -17,7 +17,7 @@
       Market source:
       <select name="market_source_id">
         {% for source in market_sources %}
-          <option value="{{ source['source_id'] }}">{{ source["source_name"] }}</option>
+          <option value="{{ source['source_id'] }}">{{ source["display_name"] }}</option>
         {% endfor %}
       </select>
     </p>
