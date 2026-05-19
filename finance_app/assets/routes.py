@@ -2,12 +2,7 @@ from flask import Blueprint, flash, request, redirect, render_template, url_for
 
 from finance_app.accounts import repository as accounts
 from finance_app.assets import repository as assets
-from finance_app.market import (
-    market_dividends,
-    market_prices,
-    market_sources,
-    market_splits,
-)
+from finance_app.market import dividends, prices, sources, splits
 from finance_app.transactions import repository as transactions
 
 assets_bp = Blueprint("assets", __name__, template_folder="templates")
@@ -35,7 +30,7 @@ def add():
 
     a = accounts.get_all_accounts()
 
-    s = market_sources.get_all_sources()
+    s = sources.get_all_sources()
 
     if not a:
         flash("No accounts. Must add account first.")
@@ -60,7 +55,7 @@ def edit(asset_id):
 
     a = assets.get_asset_by_id(asset_id)
 
-    s = market_sources.get_all_sources()
+    s = sources.get_all_sources()
 
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
@@ -88,15 +83,15 @@ def delete(asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
 
-    if market_prices.get_prices_for_asset(asset_id):
+    if prices.get_prices_for_asset(asset_id):
         flash("Must delete prices first.")
         return redirect(url_for("assets.index"))
 
-    if market_dividends.get_dividends_for_asset(asset_id):
+    if dividends.get_dividends_for_asset(asset_id):
         flash("Must delete dividends first.")
         return redirect(url_for("assets.index"))
 
-    if market_splits.get_splits_for_asset(asset_id):
+    if splits.get_splits_for_asset(asset_id):
         flash("Must delete splits first.")
         return redirect(url_for("assets.index"))
 

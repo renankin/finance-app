@@ -1,5 +1,6 @@
 from finance_app.db import execute_db, query_db
 from finance_app.assets import repository as assets
+from finance_app.market import sources
 
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
@@ -39,11 +40,14 @@ def delete_dividends_for_asset(asset_id: int) -> bool:
 def insert_dividends_for_asset(asset_id: int) -> bool:
     """Insert dividends for stock in database and returns True if successful."""
 
-    a = assets.get_asset_by_id(asset_id)
+    
+    asset = assets.get_asset_by_id(asset_id)
 
-    fetcher = FetcherProtocol(a["source_key"])
+    market_source = sources.get_source_by_id(asset["market_source_id"])
 
-    dividends = fetcher.fetch_dividends(a["asset_name"])
+    fetcher = FetcherProtocol(market_source)
+
+    dividends = fetcher.fetch_dividends(asset["asset_name"])
 
     if dividends:
         args = []

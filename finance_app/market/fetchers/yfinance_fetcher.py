@@ -31,8 +31,7 @@ def get_dividends(symbol: str) -> list[dict]:
     vals = []
 
     for index, div in divs.items():
-        if not div.isna().any():
-            vals.append({"date": index.date(), "dividend": float(div)})
+        vals.append({"date": index.date(), "dividend": float(div)})
 
     return vals
 
@@ -49,7 +48,6 @@ def get_stock_splits(symbol: str) -> list[dict]:
     vals = []
 
     for index, split_ratio in splits.items():
-        if not split_ratio.isna().any():
-            vals.append({"date": index.date(), "split_ratio": float(split_ratio)})
+        vals.append({"date": index.date(), "split_ratio": float(split_ratio)})
 
     return vals

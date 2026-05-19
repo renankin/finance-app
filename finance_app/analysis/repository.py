@@ -3,7 +3,7 @@ import datetime as dt
 
 from finance_app.assets import repository as assets
 from finance_app.transactions import repository as transactions
-from finance_app.market import market_dividends, market_prices, market_splits
+from finance_app.market import dividends, prices, splits
 
 
 def get_adjusted_transactions(asset_id: int) -> list:
@@ -12,7 +12,7 @@ def get_adjusted_transactions(asset_id: int) -> list:
 
     t = transactions.get_transactions_from_asset(asset_id)
 
-    s = market_splits.get_splits_for_asset(asset_id)
+    s = splits.get_splits_for_asset(asset_id)
 
     for transaction in t:
         transaction["adjusted"] = "No"
@@ -29,7 +29,7 @@ def get_dividends_received(asset_id: int) -> list[dict]:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
 
-    market_divs = market_dividends.get_dividends_for_asset(asset_id)
+    market_divs = dividends.get_dividends_for_asset(asset_id)
     t = get_adjusted_transactions(asset_id)
 
     divs_received = []
@@ -85,7 +85,7 @@ def get_irr_for_asset(asset_id: int) -> float | None:
 
     a = assets.get_asset_by_id(asset_id)
     if a["still_open"]:
-        p = market_prices.get_prices_for_asset(asset_id)
+        p = prices.get_prices_for_asset(asset_id)
         if p:
             price_date = max([price["date"] for price in p])
             price_value = [
