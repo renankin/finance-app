@@ -14,17 +14,19 @@
       <input name="asset_name" type="text" value="{{ asset['asset_name'] }}" />
     </p>
     <p>
-      Type:
-      <select name="asset_type">
-        <option value="bond">Bond</option>
-        <option value="etf">ETF</option>
-        <option value="stock">Stock</option>
+      Market source:
+      <select name="market_source_id">
+        {% for source in market_sources %}
+          <option value="{{ source['source_id'] }}">{{ source["display_name"] }}</option>
+        {% endfor %}
       </select>
     </p>
-    <select name="still_open">
-      <option value="0">Position closed</option>
-      <option value="1">Position open</option>
-    </select>
+    <p>
+    Position open:
+      <input name="still_open"
+             type="checkbox"
+             {% if asset["still_open"] %}checked{% endif %} />
+    </p>
     <p>
       <button type="submit" class="btn btn-primary">Edit</button>
     </p>

@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}
+  Edit source
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('market.update_source', source_id=source['source_id']) }}"
+        method="post">
+    <p>
+      <input value="{{ source['display_name'] }}" name="source_name" type="text" />
+    </p>
+    <p>
+      <input value="{{ source['source_key'] }}" name="source_key" type="text" />
+    </p>
+    <p>
+      Support prices
+      <input name="supports_prices"
+             type="checkbox"
+             {% if source['supports_prices']: %}checked{% endif %} />
+    </p>
+    <p>
+      Support dividends
+      <input name="supports_dividends"
+             type="checkbox"
+             {% if source['supports_dividends']: %}checked{% endif %} />
+    </p>
+    <p>
+      Support stock splits
+      <input name="supports_splits"
+             type="checkbox"
+             {% if source['supports_stock_splits']: %}checked{% endif %} />
+    </p>
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+{% endblock main %}

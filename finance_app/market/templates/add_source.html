@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}
+  Add new source
+{% endblock title %}
+{% block main %}
+  <form action="{{ url_for('market.add_source') }}" method="post">
+    <p>
+      <input placeholder="Display Name" name="source_name" type="text" />
+    </p>
+    <p>
+      <input placeholder="Key" name="source_key" type="text" />
+    </p>
+    <p>
+      Support prices
+      <input name="supports_prices" type="checkbox" value="1" />
+    </p>
+    <p>
+      Support dividends
+      <input name="supports_dividends" type="checkbox" value="1" />
+    </p>
+    <p>
+      Support stock splits
+      <input name="supports_splits" type="checkbox" value="1" />
+    </p>
+    <button type="submit" class="btn btn-primary">Insert</button>
+  </form>
+{% endblock main %}

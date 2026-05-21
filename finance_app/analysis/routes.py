@@ -42,7 +42,7 @@ def show_dividends(asset_id):
     dividends = analysis.get_dividends_received(asset_id)
 
     if not dividends:
-        flash("Must add dividends first.")
+        flash("No dividends to show.")
         return redirect(url_for("analysis.get_dividends"))
 
     return render_template("show_dividends_received.html", dividends=dividends)
@@ -65,6 +65,6 @@ def get_splits():
 def show_splits(asset_id):
     """Show adjusted prices and shares for asset."""
 
-    t = analysis.adjust_transactions(asset_id)
+    t = analysis.get_adjusted_transactions(asset_id)
 
     return render_template("show_adjusted_transactions.html", transactions=t)

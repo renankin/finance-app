@@ -1,7 +1,4 @@
-import datetime as dt
-
 from finance_app.db import query_db, execute_db
-from finance_app.assets.repository import get_asset_by_id
 
 
 def delete_transaction(transaction_id: int):
@@ -11,8 +8,8 @@ def delete_transaction(transaction_id: int):
 
 
 def get_all_transactions() -> list:
-    """Fetch all transactions from database and returns a list of dictionaries 
-    containing `transaction_id`, `account_name`, `asset_name`, `date`, `currency`, 
+    """Fetch all transactions from database and returns a list of dictionaries
+    containing `transaction_id`, `account_name`, `asset_name`, `date`, `currency`,
     `shares` and `price`."""
 
     query = (
@@ -52,7 +49,7 @@ def get_transaction_by_id(transaction_id: int) -> dict:
 
 def get_transactions_from_asset(asset_id: int) -> list:
     """Fetch all transactions of an asset and return as list of dictionaries
-      with `date`, `price`, `shares` and `currency`."""
+    with `date`, `price`, `shares` and `currency`."""
 
     query = (
         "SELECT transactions.date, transactions.shares, transactions.price,"
@@ -92,4 +89,3 @@ def update_transaction(
     )
 
     execute_db(query, (asset_id, date, shares, price, transaction_id))
-

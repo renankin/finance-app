@@ -5,14 +5,14 @@
 {% block main %}
   <form action="{{ url_for('assets.add') }}" method="post">
     <select name="account_id">
-      {% for account in accounts: %}
+      {% for account in accounts %}
         <option value="{{ account['account_id'] }}">{{ account["account_name"] }}</option>
       {% endfor %}
     </select>
-    <select name="asset_type">
-      <option value="bond">Bond</option>
-      <option value="etf">ETF</option>
-      <option value="stock">Stock</option>
+    <select name="market_source_id">
+      {% for source in sources %}
+        <option value="{{ source['source_id'] }}">{{ source["display_name"] }}</option>
+      {% endfor %}
     </select>
     <input name="asset_name" type="text" placeholder="Asset name" />
     <select name="still_open">

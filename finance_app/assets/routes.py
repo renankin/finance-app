@@ -2,7 +2,7 @@ from flask import Blueprint, flash, request, redirect, render_template, url_for
 
 from finance_app.accounts import repository as accounts
 from finance_app.assets import repository as assets
-from finance_app.market import repository as market
+from finance_app.market import dividends, prices, sources, splits
 from finance_app.transactions import repository as transactions
 
 assets_bp = Blueprint("assets", __name__, template_folder="templates")
@@ -10,7 +10,7 @@ assets_bp = Blueprint("assets", __name__, template_folder="templates")
 
 @assets_bp.route("/assets")
 def index():
-    """Show list of assets currently in account."""
+    """Show list of assets in account."""
 
     if not accounts.get_all_accounts():
         return redirect(url_for("accounts.index"))
@@ -18,7 +18,7 @@ def index():
     a = assets.get_all_assets()
 
     if a:
-        return render_template("assets.html", assets=a)
+        return render_template("read_assets.html", assets=a)
 
     flash("No assets to show. Must add asset first.")
     return redirect(url_for("assets.add"))
@@ -30,6 +30,8 @@ def add():
 
     a = accounts.get_all_accounts()
 
+    s = sources.get_all_sources()
+
     if not a:
         flash("No accounts. Must add account first.")
         return redirect(url_for("accounts.add"))
@@ -37,31 +39,40 @@ def add():
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
-        asset_type = request.form.get("asset_type")
+        market_source_id = request.form.get("market_source_id", type=int)
         still_open = request.form.get("still_open", type=int)
 
-        assets.insert_asset(account_id, asset_name, asset_type, still_open)
+        assets.insert_asset(account_id, asset_name, market_source_id, still_open)
         flash("Asset added.")
         return redirect(url_for("assets.index"))
 
-    return render_template("add_asset.html", accounts=a)
+    return render_template("add_asset.html", accounts=a, sources=s)
 
 
 @assets_bp.route("/assets/edit/<int:asset_id>", methods=["POST", "GET"])
 def edit(asset_id):
     """Edit asset."""
 
+    a = assets.get_asset_by_id(asset_id)
+
+    s = sources.get_all_sources()
+
     if request.method == "POST":
         account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
-        asset_type = request.form.get("asset_type")
-        still_open = request.form.get("still_open", type=int)
+        market_source_id = request.form.get("market_source_id", type=int)
+        still_open = request.form.get("still_open", type=bool)
 
-        assets.update_asset(asset_id, account_id, asset_name, asset_type, still_open)
+        if not still_open:
+            still_open = False
+
+        assets.update_asset(
+            asset_id, account_id, asset_name, market_source_id, still_open
+        )
         flash("Asset updated.")
         return redirect(url_for("assets.index"))
 
-    return render_template("edit_asset.html", asset=assets.get_asset_by_id(asset_id))
+    return render_template("edit_asset.html", asset=a, market_sources=s)
 
 
 @assets_bp.route("/assets/delete/<int:asset_id>", methods=["POST"])
@@ -71,19 +82,19 @@ def delete(asset_id):
     if transactions.get_transactions_from_asset(asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
-    
-    if market.get_prices_for_asset(asset_id):
+
+    if prices.get_prices_for_asset(asset_id):
         flash("Must delete prices first.")
         return redirect(url_for("assets.index"))
 
-    if market.get_dividends_for_asset(asset_id):
+    if dividends.get_dividends_for_asset(asset_id):
         flash("Must delete dividends first.")
         return redirect(url_for("assets.index"))
-    
-    if market.get_splits_for_asset(asset_id):
+
+    if splits.get_splits_for_asset(asset_id):
         flash("Must delete splits first.")
         return redirect(url_for("assets.index"))
-    
+
     assets.delete_asset(asset_id)
     flash("Asset deleted.")
 

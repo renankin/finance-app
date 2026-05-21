@@ -1,6 +1,7 @@
-import sqlite3
 import datetime as dt
+import sqlite3
 
+import click
 from flask import current_app, g
 
 
@@ -39,23 +40,24 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
-
+@click.command("init-db")
 def init_db():
-    """Use this function to initialise database from Python shell."""
+    """Instantiate a database from CLI."""
 
-    with current_app.app_context():
-        db = get_db()
-        with current_app.open_resource("schema.sql", mode="r") as f:
-            db.executescript(f.read())
-        db.commit()
+    db = get_db()
+    with current_app.open_resource("schema.sql", mode="r") as f:
+        db.executescript(f.read())
+    db.commit()
+
+    click.echo("Database initialised.")
 
 
 def execute_db(query: str, args=()):
     """Insert a command in the database. If args is a list it will insert all entries
-      into database."""
+    into database."""
 
     db = get_db()
-    
+
     if isinstance(args, list):
         cur = db.executemany(query, args)
     else:
@@ -63,7 +65,6 @@ def execute_db(query: str, args=()):
 
     cur.close()
     db.commit()
-
 
 
 def query_db(query: str, args=(), one=False):
@@ -93,3 +94,4 @@ def query_db(query: str, args=(), one=False):
 
 def init_app(app):
     app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db)

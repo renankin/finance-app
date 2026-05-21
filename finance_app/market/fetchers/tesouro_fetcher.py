@@ -2,7 +2,7 @@ import datetime as dt
 import requests
 
 
-def get_prices(bond_symbol: str) -> dict:
+def get_prices(bond_symbol: str) -> list[dict]:
     """
     Scrape "Tesouro Transparente" portal and return daily prices for bond.
     """
@@ -18,23 +18,20 @@ def get_prices(bond_symbol: str) -> dict:
 
     r.raise_for_status()
 
-    name = bond_symbol.split()[0] + " " + bond_symbol.split()[1]
-    due_year = int(bond_symbol.split()[2])
-
     prices = []
 
     i = 0
     for line in r.iter_lines():
         items = line.decode("utf-8").split(";")
 
-        # items are bond_name, due_date, base_date, purchase_rate, sell_rate, 
+        # Items are: bond_name, due_date, base_date, purchase_rate, sell_rate, 
         # purchase_price, sell_price and base_price
 
         if i > 0:  # Skip header
             bond_name = items[0]
-            due_date = dt.datetime.strptime(items[1], "%d/%m/%Y")
+            maturity = dt.datetime.strptime(items[1], "%d/%m/%Y")
 
-            if name == bond_name and due_date.year == due_year:
+            if bond_symbol == f"{bond_name} {maturity.year}":
                 base_date = dt.datetime.strptime(items[2], "%d/%m/%Y")
                 base_price = float(items[7].replace(",", "."))
 
