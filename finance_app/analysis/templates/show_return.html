@@ -6,15 +6,39 @@
   <table class="table">
     <thead>
       <th>Asset name</th>
+      <th>Position open</th>
       <th>Annualized return</th>
+      <th>Dividends received</th>
+      <th>Total invested</th>
     </thead>
     <tbody>
-      {% for asset in assets: %}
+      {% for asset in assets %}
         <tr>
           <td>{{ asset["asset_name"] }}</td>
           <td>
-            {% if asset["irr"]: %}
+            {% if asset["still_open"] %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+          </td>
+          <td>
+            {% if asset["irr"] %}
               {{ "%.2f" | format(100 * asset["irr"]) }}%
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if asset["total_dividends"] %}
+              {{ asset["total_dividends"] | format_currency(asset["currency"]) }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if asset["total_invested"] %}
+              {{ asset["total_invested"] | format_currency(asset["currency"]) }}
             {% else %}
               -
             {% endif %}

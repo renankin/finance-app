@@ -9,12 +9,12 @@ def delete_asset(asset_id: int):
 
 def get_all_assets() -> list:
     """Fetch assets from all accounts and returns a list of dictionaries containing
-    `asset_id`, `asset_name`, `account_name`, `source_display_name` and `still_open`."""
+    `asset_id`, `asset_name`, `account_name`, `currency`, `source_display_name` and `still_open`."""
 
     query = (
         "SELECT assets.asset_id, assets.asset_name, "
         " market_sources.display_name AS source_display_name,"
-        " assets.still_open, accounts.account_name"
+        " assets.still_open, accounts.account_name, accounts.currency"
         " FROM assets"
         " JOIN accounts ON assets.account_id = accounts.account_id"
         " JOIN market_sources ON assets.market_source_id = market_sources.source_id"
