@@ -7,9 +7,12 @@
     <thead>
       <th>Asset name</th>
       <th>Position open</th>
-      <th>Annualized return</th>
-      <th>Dividends received</th>
       <th>Total invested</th>
+      <th>Total sold</th>
+      <th>Market value</th>
+      <th>Dividends received</th>
+      <th>ROI</th>
+      <th>Annualised return</th>
     </thead>
     <tbody>
       {% for asset in assets %}
@@ -23,8 +26,22 @@
             {% endif %}
           </td>
           <td>
-            {% if asset["irr"] %}
-              {{ "%.2f" | format(100 * asset["irr"]) }}%
+            {% if asset["total_invested"] %}
+              {{ asset["total_invested"] | format_currency(asset["currency"]) }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if asset["total_sold"] %}
+              {{ asset["total_sold"] | format_currency(asset["currency"]) }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+            <td>
+            {% if asset["market_value"] %}
+              {{ asset["market_value"] | format_currency(asset["currency"]) }}
             {% else %}
               -
             {% endif %}
@@ -37,13 +54,20 @@
             {% endif %}
           </td>
           <td>
-            {% if asset["total_invested"] %}
-              {{ asset["total_invested"] | format_currency(asset["currency"]) }}
+            {% if asset["roi"] %}
+              {{ "%.2f" | format(100 * asset["roi"]) }} %
             {% else %}
               -
             {% endif %}
           </td>
-        </tr>
+          <td>
+            {% if asset["irr"] %}
+              {{ "%.2f" | format(100 * asset["irr"]) }} %
+            {% else %}
+              -
+            {% endif %}
+          </tr>
+        </td>
       {% endfor %}
     </tbody>
   </table>

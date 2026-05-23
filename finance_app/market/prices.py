@@ -25,6 +25,23 @@ def get_prices_for_asset(asset_id: int) -> list:
     return []
 
 
+def get_most_recent_price(asset_id: int) -> dict:
+    """Returns the most recent price for asset and returns a dictionary
+    containing `price` and `date` key."""
+
+    p = get_prices_for_asset(asset_id)
+
+    if p:
+        price_date = max([price["date"] for price in p])
+        price_value = [
+            price["unit_price"] for price in p if price["date"] == price_date
+        ]
+
+        return {"date": price_date, "price": price_value[0]}
+
+    return {}
+
+
 def delete_prices_for_asset(asset_id: int) -> bool:
     """Deletes prices from database and returns True if successful."""
 

@@ -2,6 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, url_for
 
 from finance_app.assets import repository as assets
 from finance_app.analysis import repository as analysis
+from finance_app.market import prices
 from finance_app.transactions import repository as transactions
 
 analysis_bp = Blueprint("analysis", __name__, template_folder="templates")
@@ -11,26 +12,11 @@ analysis_bp = Blueprint("analysis", __name__, template_folder="templates")
 def show_return():
     """Displays the return on investiment for each asset own"""
 
-    a = assets.get_all_assets()
+    a = analysis.get_return_for_assets()
 
     if not a:
         flash("No assets to show. Must add asset first.")
         return redirect(url_for("assets.add"))
-
-    for asset in a:
-        asset["irr"] = analysis.get_irr_for_asset(asset["asset_id"])
-
-        divs = analysis.get_dividends_received(asset["asset_id"])
-        asset["total_dividends"] = sum(div["amount_received"] for div in divs)
-
-        trans = transactions.get_transactions_from_asset(asset["asset_id"])
-
-        asset["total_invested"] = sum(
-            t["price"] * t["shares"] for t in trans if t["shares"] > 0
-        )
-
-
-        #asset["balance"]
 
     return render_template("show_return.html", assets=a)
 
