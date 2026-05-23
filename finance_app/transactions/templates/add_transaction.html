@@ -3,12 +3,8 @@
   Add new transaction
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('transactions.add') }}" method="post">
-    <select name="asset_id">
-      {% for asset in assets: %}
-        <option value="{{ asset['asset_id'] }}">{{ asset['asset_name'] }}</option>
-      {% endfor %}
-    </select>
+  <p>Adding new transaction for {{ asset["asset_name"] }} </p>
+  <form action="{{ url_for('transactions.add', asset_id=asset['asset_id']) }}" method="post">
     <input name="date" type="date" placeholder="Date" />
     <input name="shares" type="text" placeholder="Shares" />
     <input name="price" type="text" placeholder="Price" />

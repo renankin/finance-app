@@ -10,47 +10,32 @@ transactions_bp = Blueprint("transactions", __name__, template_folder="templates
 
 @transactions_bp.route("/transactions")
 def index():
-    """Shows a list of all transactions."""
-
-    if not accounts.get_all_accounts():
-        return redirect(url_for("accounts.index"))
-
-    if not assets.get_all_assets():
-        return redirect(url_for("assets.index"))
-
-    t = transactions.get_all_transactions()
-
-    if transactions:
-        return render_template("transactions.html", transactions=t)
-
-    flash("No transactions to show. Must add transaction first.")
-    return redirect(url_for("transactions.add"))
-
-
-@transactions_bp.route("/transactions/add", methods=["GET", "POST"])
-def add():
-    """Adds new transaction into database"""
+    """Get transactions."""
 
     a = assets.get_all_assets()
 
-    if not a:
-        flash("No assets to show. Must add asset first.")
-        return redirect(url_for("assets.add"))
+    return render_template("get_transactions.html", assets=a)
+
+
+@transactions_bp.route("/transactions/<int:asset_id>/add", methods=["GET", "POST"])
+def add(asset_id):
+    """Adds new transaction into database."""
+
+    a = assets.get_asset_by_id(asset_id)
 
     if request.method == "POST":
-        asset_id = request.form.get("asset_id", type=int)
         date = request.form.get("date")
         shares = request.form.get("shares", type=float)
         price = request.form.get("price", type=float)
 
         transactions.insert_transaction(asset_id, date, shares, price)
         flash("Transaction added.")
-        return redirect(url_for("transactions.index"))
+        return redirect(url_for("transactions.show", asset_id=asset_id))
 
-    return render_template("add_transaction.html", assets=a)
+    return render_template("add_transaction.html", asset=a)
 
 
-@transactions_bp.route("/transactions/delete/<int:transaction_id>", methods=["POST"])
+@transactions_bp.route("/transactions/<int:transaction_id>/delete", methods=["POST"])
 def delete(transaction_id):
     """Deletes transaction"""
 
@@ -66,7 +51,7 @@ def delete(transaction_id):
 
 
 @transactions_bp.route(
-    "/transactions/edit/<int:transaction_id>", methods=["GET", "POST"]
+    "/transactions/<int:transaction_id>/edit", methods=["GET", "POST"]
 )
 def edit(transaction_id):
     """Edit transaction"""
@@ -85,6 +70,17 @@ def edit(transaction_id):
 
         transactions.update_transaction(transaction_id, asset_id, date, shares, price)
         flash("Transaction updated.")
-        return redirect(url_for("transactions.index"))
+        return redirect(url_for("transactions.show", asset_id=asset_id))
 
     return render_template("edit_transaction.html", transaction=t)
+
+
+@transactions_bp.route("/transactions/<int:asset_id>")
+def show(asset_id):
+    """Show transactions from asset as a table."""
+
+    t = transactions.get_transactions_from_asset(asset_id)
+
+    a = assets.get_asset_by_id(asset_id)
+
+    return render_template("show_transactions.html", asset=a, transactions=t)

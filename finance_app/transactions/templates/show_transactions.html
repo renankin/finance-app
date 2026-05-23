@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}
-  History
+  Transactions
 {% endblock title %}
 {% block main %}
-  <a href="{{ url_for('transactions.add') }}">Add new transaction</a>
+  <a href="{{ url_for('transactions.add', asset_id=asset['asset_id']) }}">Add new transaction</a>
   <table class="table table-borderless">
     <thead>
       <tr>
@@ -18,8 +18,8 @@
     <tbody>
       {% for t in transactions: %}
         <tr>
-          <td>{{ t ["account_name"] }}</td>
-          <td>{{ t ["asset_name"] }}</td>
+          <td>{{ t["account_name"] }}</td>
+          <td>{{ t["asset_name"] }}</td>
           <td>{{ t["date"]| format_date }}</td>
           <td>{{ "%.2f" | format(t["shares"]) }}</td>
           <td>{{ t["price"] | format_currency(t["currency"]) }}</td>
