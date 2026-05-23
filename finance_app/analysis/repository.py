@@ -25,6 +25,53 @@ def get_adjusted_transactions(asset_id: int) -> list:
     return t
 
 
+def get_return_for_assets() -> list[dict]:
+    """Returns a list of dictionaries containing the return for all assets
+    including `asset_name`, `currency`, `still_open`, `total_invested`,
+    `total_sold`, `total_dividends`,`irr` and `net_return`"""
+
+    all_assets = assets.get_all_assets()
+
+    all_stats = []
+
+    for asset in all_assets:
+        divs = get_dividends_received(asset["asset_id"])
+        total_divs = sum(div["amount_received"] for div in divs)
+
+        trans = get_adjusted_transactions(asset["asset_id"])
+        total_invested = sum(t["price"] * t["shares"] for t in trans if t["shares"] > 0)
+        total_sold = sum(t["price"] * -t["shares"] for t in trans if t["shares"] < 0)
+
+        market_value = 0
+        if asset["still_open"]:
+            p = prices.get_most_recent_price(asset["asset_id"])
+            if p:
+                total_shares = sum(t["shares"] for t in trans)
+                market_value = total_shares * p["price"]
+
+        total_return = market_value + total_sold + total_divs
+        if total_invested > 0 and total_return > 0:
+            roi = (total_return - total_invested) / total_invested
+        else:
+            roi = None
+
+        stats = {
+            "asset_name": asset["asset_name"],
+            "still_open": asset["still_open"],
+            "currency": asset["currency"],
+            "total_invested": total_invested,
+            "total_sold": total_sold,
+            "market_value": market_value,
+            "total_dividends": total_divs,
+            "irr": get_irr_for_asset(asset["asset_id"]),
+            "roi": roi,
+        }
+
+        all_stats.append(stats)
+
+    return all_stats
+
+
 def get_dividends_received(asset_id: int) -> list[dict]:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
@@ -34,7 +81,6 @@ def get_dividends_received(asset_id: int) -> list[dict]:
 
     divs_received = []
     for div in market_divs:
-        
         a = assets.get_asset_by_id(asset_id)
         if not a["still_open"]:
             last_date = max([transaction["date"] for transaction in t])
@@ -85,14 +131,10 @@ def get_irr_for_asset(asset_id: int) -> float | None:
 
     a = assets.get_asset_by_id(asset_id)
     if a["still_open"]:
-        p = prices.get_prices_for_asset(asset_id)
+        p = prices.get_most_recent_price(asset_id)
         if p:
-            price_date = max([price["date"] for price in p])
-            price_value = [
-                price["unit_price"] for price in p if price["date"] == price_date
-            ]
-            cashflow.append(price_value[0] * total_shares)
-            dates.append(price_date)
+            cashflow.append(p["price"] * total_shares)
+            dates.append(p["date"])
         else:
             return None
 
