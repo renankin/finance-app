@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}
+  Transactions
+{% endblock title %}
+{% block main %}
+  <div class="dropdown">
+    Select transactions:
+    <button class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">Assets</button>
+    <ul class="dropdown-menu">
+      {% for asset in assets: %}
+        <li>
+          <a class="dropdown-item"
+             href="{{ url_for('transactions.show', asset_id=asset['asset_id']) }}">{{ asset["asset_name"] }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock main %}

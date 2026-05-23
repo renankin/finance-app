@@ -7,7 +7,7 @@ def delete_transaction(transaction_id: int):
     execute_db("DELETE FROM transactions WHERE transaction_id = ?", (transaction_id,))
 
 
-def get_all_transactions() -> list:
+def get_transactions_from_asset(asset_id: int) -> list[dict]:
     """Fetch all transactions from database and returns a list of dictionaries
     containing `transaction_id`, `account_name`, `asset_name`, `date`, `currency`,
     `shares` and `price`."""
@@ -19,9 +19,11 @@ def get_all_transactions() -> list:
         " FROM transactions"
         " JOIN assets ON transactions.asset_id = assets.asset_id"
         " JOIN accounts ON assets.account_id = accounts.account_id"
+        " WHERE assets.asset_id = ?"
+        " ORDER BY transactions.date"
     )
 
-    transactions = query_db(query)
+    transactions = query_db(query, (asset_id, ))
 
     if transactions:
         return transactions
@@ -45,27 +47,6 @@ def get_transaction_by_id(transaction_id: int) -> dict:
         return transaction
 
     return {}
-
-
-def get_transactions_from_asset(asset_id: int) -> list:
-    """Fetch all transactions of an asset and return as list of dictionaries
-    with `date`, `price`, `shares` and `currency`."""
-
-    query = (
-        "SELECT transactions.date, transactions.shares, transactions.price,"
-        " accounts.currency"
-        " FROM transactions"
-        " JOIN assets ON transactions.asset_id = assets.asset_id"
-        " JOIN accounts ON assets.account_id = accounts.account_id"
-        " WHERE transactions.asset_id = ?"
-    )
-
-    transactions = query_db(query, (asset_id,))
-
-    if transactions:
-        return transactions
-
-    return []
 
 
 def insert_transaction(asset_id: int, date: str, shares: float, price: float):

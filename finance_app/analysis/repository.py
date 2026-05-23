@@ -26,8 +26,9 @@ def get_adjusted_transactions(asset_id: int) -> list:
 
 
 def get_return_for_assets() -> list[dict]:
-    """Returns a list of dictionaries containing the return for all assets including `asset_name`, `currency`,
-    `still_open`, `total_invested`, `total_sold`, `total_dividends`,`irr`, `net_return`"""
+    """Returns a list of dictionaries containing the return for all assets
+    including `asset_name`, `currency`, `still_open`, `total_invested`,
+    `total_sold`, `total_dividends`,`irr` and `net_return`"""
 
     all_assets = assets.get_all_assets()
 
@@ -41,17 +42,16 @@ def get_return_for_assets() -> list[dict]:
         total_invested = sum(t["price"] * t["shares"] for t in trans if t["shares"] > 0)
         total_sold = sum(t["price"] * -t["shares"] for t in trans if t["shares"] < 0)
 
+        market_value = 0
         if asset["still_open"]:
-            total_shares = sum(t["shares"] for t in trans)
             p = prices.get_most_recent_price(asset["asset_id"])
-            market_value = total_shares * p["price"]
-        else:
-            market_value = 0
+            if p:
+                total_shares = sum(t["shares"] for t in trans)
+                market_value = total_shares * p["price"]
 
-        if total_invested > 0:
-            roi = (
-                market_value + total_sold + total_divs - total_invested
-            ) / total_invested
+        total_return = market_value + total_sold + total_divs
+        if total_invested > 0 and total_return > 0:
+            roi = (total_return - total_invested) / total_invested
         else:
             roi = None
 
