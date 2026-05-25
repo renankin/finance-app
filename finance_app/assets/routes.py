@@ -8,57 +8,50 @@ from finance_app.transactions import repository as transactions
 assets_bp = Blueprint("assets", __name__, template_folder="templates")
 
 
-@assets_bp.route("/assets")
-def index():
+@assets_bp.route("/accounts/<int:account_id>/assets")
+def show_assets(account_id):
     """Show list of assets in account."""
 
-    if not accounts.get_all_accounts():
-        return redirect(url_for("accounts.index"))
+    ass = assets.get_assets_from_account(account_id)
 
-    a = assets.get_all_assets()
+    acc = accounts.get_account_by_id(account_id)
 
-    if a:
-        return render_template("read_assets.html", assets=a)
+    if ass:
+        return render_template("show_assets.html", assets=ass, account=acc)
 
     flash("No assets to show. Must add asset first.")
-    return redirect(url_for("assets.add"))
+    return redirect(url_for("assets.add_asset", account_id=account_id))
 
 
-@assets_bp.route("/assets/add", methods=["POST", "GET"])
-def add():
+@assets_bp.route("/accounts/<int:account_id>/assets/add", methods=["POST", "GET"])
+def add_asset(account_id):
     """Add new asset for account."""
-
-    a = accounts.get_all_accounts()
 
     s = sources.get_all_sources()
 
-    if not a:
-        flash("No accounts. Must add account first.")
-        return redirect(url_for("accounts.add"))
+    acc = accounts.get_account_by_id(account_id)
 
     if request.method == "POST":
-        account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
         market_source_id = request.form.get("market_source_id", type=int)
         still_open = request.form.get("still_open", type=int)
 
         assets.insert_asset(account_id, asset_name, market_source_id, still_open)
         flash("Asset added.")
-        return redirect(url_for("assets.index"))
+        return redirect(url_for("assets.show_assets", account_id=account_id))
 
-    return render_template("add_asset.html", accounts=a, sources=s)
+    return render_template("add_asset.html", sources=s, account=acc)
 
 
-@assets_bp.route("/assets/edit/<int:asset_id>", methods=["POST", "GET"])
-def edit(asset_id):
+@assets_bp.route("/accounts/<int:account_id>/assets/<int:asset_id>/edit", methods=["POST", "GET"])
+def edit_asset(account_id, asset_id):
     """Edit asset."""
 
-    a = assets.get_asset_by_id(asset_id)
+    a = assets.get_asset_by_id(asset_id, account_id)
 
     s = sources.get_all_sources()
 
     if request.method == "POST":
-        account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
         market_source_id = request.form.get("market_source_id", type=int)
         still_open = request.form.get("still_open", type=bool)
@@ -70,7 +63,7 @@ def edit(asset_id):
             asset_id, account_id, asset_name, market_source_id, still_open
         )
         flash("Asset updated.")
-        return redirect(url_for("assets.index"))
+        return redirect(url_for("assets.show_assets", account_id=account_id))
 
     return render_template("edit_asset.html", asset=a, market_sources=s)
 

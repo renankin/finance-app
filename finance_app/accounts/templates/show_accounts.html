@@ -17,6 +17,12 @@
           <td>{{ account["account_name"] }}</td>
           <td>{{ account["currency"] }}</td>
           <td>
+            <form action="{{ url_for('assets.show', account_id=account['account_id']) }}"
+                  method="get">
+              <button type="submit" class="btn btn-primary">Show Assets</button>
+            </form>
+          </td>
+          <td>
             <form action="{{ url_for('accounts.edit', account_id=account['account_id']) }}"
                   method="get">
               <button type="submit" class="btn btn-primary">Edit Account</button>

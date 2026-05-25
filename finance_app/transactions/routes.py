@@ -1,6 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from finance_app.accounts import repository as accounts
 from finance_app.assets import repository as assets
 from finance_app.transactions import repository as transactions
 

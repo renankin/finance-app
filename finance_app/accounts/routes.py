@@ -13,7 +13,7 @@ def index():
     a = accounts.get_all_accounts()
 
     if a:
-        return render_template("accounts.html", accounts=a)
+        return render_template("show_accounts.html", accounts=a)
 
     flash("No accounts to show. Must add account first.")
     return redirect(url_for("accounts.add"))

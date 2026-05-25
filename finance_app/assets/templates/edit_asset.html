@@ -3,7 +3,7 @@
   Edit
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}"
+  <form action="{{ url_for('assets.edit_asset', asset_id=asset['asset_id'], account_id=asset['account_id']) }}"
         method="post">
     <p>
       Account name: {{ asset["account_name"] }}
