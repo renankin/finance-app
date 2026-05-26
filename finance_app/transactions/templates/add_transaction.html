@@ -3,8 +3,9 @@
   Add new transaction
 {% endblock title %}
 {% block main %}
-  <p>Adding new transaction for {{ asset["asset_name"] }} </p>
-  <form action="{{ url_for('transactions.add', asset_id=asset['asset_id']) }}" method="post">
+  <p>Adding new transaction for {{ asset["asset_name"] }} in account {{ account["account_name"] }}:</p>
+  <form action="{{ url_for('transactions.add_transaction', account_id=account['account_id'], asset_id=asset['asset_id']) }}"
+        method="post">
     <input name="date" type="date" placeholder="Date" />
     <input name="shares" type="text" placeholder="Shares" />
     <input name="price" type="text" placeholder="Price" />

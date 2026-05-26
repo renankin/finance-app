@@ -7,7 +7,7 @@ accounts_bp = Blueprint("accounts", __name__, template_folder="templates")
 
 
 @accounts_bp.route("/accounts")
-def index():
+def show_accounts():
     """Show all accounts."""
 
     a = accounts.get_all_accounts()
@@ -20,7 +20,7 @@ def index():
 
 
 @accounts_bp.route("/accounts/add", methods=["GET", "POST"])
-def add():
+def add_account():
     """Add new account."""
 
     if request.method == "POST":
@@ -29,13 +29,13 @@ def add():
 
         accounts.insert_account(account_name, currency)
         flash("Account added")
-        return redirect(url_for("accounts.index"))
+        return redirect(url_for("accounts.show_accounts"))
 
     return render_template("add_account.html")
 
 
 @accounts_bp.route("/accounts/<int:account_id>/edit", methods=["POST", "GET"])
-def edit(account_id):
+def edit_account(account_id):
     """Edit account."""
 
     account = accounts.get_account_by_id(account_id)
@@ -46,21 +46,21 @@ def edit(account_id):
 
         accounts.update_account(account_id, account_name, currency)
         flash("Account updated")
-        return redirect(url_for("accounts.index"))
+        return redirect(url_for("accounts.show_accounts"))
 
     return render_template("edit_account.html", account=account)
 
 
 @accounts_bp.route("/accounts/<int:account_id>/delete", methods=["POST"])
-def delete(account_id):
+def delete_account(account_id):
     """Delete account."""
 
-    a = assets.get_assets_from_account(account_id)
+    ass = assets.get_assets_from_account(account_id)
 
-    if a:
-        flash("Account not deleted. Must delete its transactions first.")
+    if ass:
+        flash("Account not deleted. Must delete its assets first.")
     else:
         accounts.delete_account(account_id)
         flash("Account deleted.")
 
-    return redirect(url_for("accounts.index"))
+    return redirect(url_for("accounts.show_accounts"))

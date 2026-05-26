@@ -3,12 +3,9 @@
   Edit
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('assets.edit_asset', asset_id=asset['asset_id'], account_id=asset['account_id']) }}"
+  <p>Editting {{ asset["asset_name"] }} in account {{ account["account_name"] }}:</p>
+  <form action="{{ url_for('assets.edit_asset', account_id=account['account_id'], asset_id=asset['asset_id']) }}"
         method="post">
-    <p>
-      Account name: {{ asset["account_name"] }}
-      <input name="account_id" type="hidden" value="{{ asset['account_id'] }}" />
-    </p>
     <p>
       Asset name:
       <input name="asset_name" type="text" value="{{ asset['asset_name'] }}" />
@@ -22,7 +19,7 @@
       </select>
     </p>
     <p>
-    Position open:
+      Position open:
       <input name="still_open"
              type="checkbox"
              {% if asset["still_open"] %}checked{% endif %} />

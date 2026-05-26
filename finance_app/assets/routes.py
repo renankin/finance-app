@@ -34,7 +34,10 @@ def add_asset(account_id):
     if request.method == "POST":
         asset_name = request.form.get("asset_name")
         market_source_id = request.form.get("market_source_id", type=int)
-        still_open = request.form.get("still_open", type=int)
+        still_open = request.form.get("still_open", type=bool)
+
+        if not still_open:
+            still_open = False
 
         assets.insert_asset(account_id, asset_name, market_source_id, still_open)
         flash("Asset added.")
@@ -43,11 +46,15 @@ def add_asset(account_id):
     return render_template("add_asset.html", sources=s, account=acc)
 
 
-@assets_bp.route("/accounts/<int:account_id>/assets/<int:asset_id>/edit", methods=["POST", "GET"])
+@assets_bp.route(
+    "/accounts/<int:account_id>/assets/<int:asset_id>/edit", methods=["POST", "GET"]
+)
 def edit_asset(account_id, asset_id):
     """Edit asset."""
 
-    a = assets.get_asset_by_id(asset_id, account_id)
+    account = accounts.get_account_by_id(account_id)
+
+    asset = assets.get_asset_by_id(account_id, asset_id)
 
     s = sources.get_all_sources()
 
@@ -65,14 +72,18 @@ def edit_asset(account_id, asset_id):
         flash("Asset updated.")
         return redirect(url_for("assets.show_assets", account_id=account_id))
 
-    return render_template("edit_asset.html", asset=a, market_sources=s)
+    return render_template(
+        "edit_asset.html", account=account, asset=asset, market_sources=s
+    )
 
 
-@assets_bp.route("/assets/delete/<int:asset_id>", methods=["POST"])
-def delete(asset_id):
+@assets_bp.route(
+    "/accounts/<int:account_id>/assets/delete/<int:asset_id>", methods=["POST"]
+)
+def delete_asset(account_id, asset_id):
     """Delete asset."""
 
-    if transactions.get_transactions_from_asset(asset_id):
+    if transactions.get_transactions_from_asset(account_id, asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
 
@@ -91,4 +102,6 @@ def delete(asset_id):
     assets.delete_asset(asset_id)
     flash("Asset deleted.")
 
-    return redirect(url_for("assets.index"))
+    return redirect(
+        url_for("assets.show_assets", account_id=account_id, asset_id=asset_id)
+    )

@@ -3,13 +3,8 @@
   Edit
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('transactions.edit', transaction_id=transaction['transaction_id']) }}"
+  <form action="{{ url_for('transactions.edit_transaction', account_id=account['account_id'], asset_id=asset['asset_id'], transaction_id=transaction['transaction_id']) }}"
         method="post">
-    <p>
-      Asset name: {{ transaction["asset_name"] }}
-      <input name="asset_id" type="hidden" value="{{ transaction['asset_id'] }}" />
-    </p>
-    
     <p>
       Date:
       <input name="date" type="date" value="{{ transaction['date'] }}" />

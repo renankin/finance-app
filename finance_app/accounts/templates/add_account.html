@@ -3,7 +3,8 @@
   Add new account
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('accounts.add') }}" method="post">
+<p>Add new account: </p>
+  <form action="{{ url_for('accounts.add_account') }}" method="post">
     <input name="account_name" type="text" placeholder="Account name" />
     <input name="currency" type="text" placeholder="Currency" />
     <button type="input" class="btn btn-primary">Add</button>

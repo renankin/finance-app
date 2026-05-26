@@ -3,12 +3,15 @@
   Transactions
 {% endblock title %}
 {% block main %}
-  <a href="{{ url_for('transactions.add', asset_id=asset['asset_id']) }}">Add new transaction</a>
+  <p>
+    <a href="{{ url_for('transactions.add_transaction', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+      Add new transaction
+    </p>
+  </a>
+  <p>Showing transactions from {{ asset["asset_name"] }} in account {{ account["account_name"] }}:</p>
   <table class="table table-borderless">
     <thead>
       <tr>
-        <th>Account name</th>
-        <th>Asset name</th>
         <th>Date</th>
         <th>Shares</th>
         <th>Price</th>
@@ -18,20 +21,18 @@
     <tbody>
       {% for t in transactions: %}
         <tr>
-          <td>{{ t["account_name"] }}</td>
-          <td>{{ t["asset_name"] }}</td>
           <td>{{ t["date"]| format_date }}</td>
           <td>{{ "%.2f" | format(t["shares"]) }}</td>
           <td>{{ t["price"] | format_currency(t["currency"]) }}</td>
           <td>{{ (t["price"] * t["shares"]) | format_currency(t["currency"]) }}</td>
           <td>
-            <form action="{{ url_for('transactions.edit', transaction_id=t['transaction_id']) }}"
+            <form action="{{ url_for('transactions.edit_transaction', account_id=account['account_id'], asset_id=asset['asset_id'], transaction_id=t['transaction_id']) }}"
                   method="get">
               <button type="submit" class="btn btn-primary">Edit</button>
             </form>
           </td>
           <td>
-            <form action="{{ url_for('transactions.delete', transaction_id=t['transaction_id']) }}"
+            <form action="{{ url_for('transactions.delete_transaction', account_id=account['account_id'], asset_id=asset['asset_id'], transaction_id=t['transaction_id']) }}"
                   method="post">
               <button type="submit" class="btn btn-primary">Delete</button>
             </form>
