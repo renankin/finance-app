@@ -1,5 +1,5 @@
 from finance_app.db import execute_db, query_db
-from finance_app.assets import repository as assets
+from finance_app.assets import assets as assets
 from finance_app.market import sources
 
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol

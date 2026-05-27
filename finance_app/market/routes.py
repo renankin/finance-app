@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, request, render_template, url_for
 
-from finance_app.assets import repository as assets
+from finance_app.assets import assets as assets
 from finance_app.market import dividends, prices, sources, splits
 
 market_bp = Blueprint("market", __name__, template_folder="templates")
@@ -45,7 +45,7 @@ def add_source():
     return render_template("add_source.html")
 
 
-@market_bp.route("/market/sources/delete/<int:source_id>", methods=["POST"])
+@market_bp.route("/market/sources/<int:source_id>/delete", methods=["POST"])
 def delete_source(source_id):
     """Deletes source from database."""
 
@@ -63,7 +63,7 @@ def delete_source(source_id):
     return redirect(url_for("market.show_sources"))
 
 
-@market_bp.route("/market/sources/edit/<int:source_id>", methods=["GET", "POST"])
+@market_bp.route("/market/sources/<int:source_id>/edit", methods=["GET", "POST"])
 def update_source(source_id):
     """Edits source."""
 
@@ -206,7 +206,7 @@ def show_prices(asset_id):
 def add_splits(asset_id):
     """Insert splits for asset."""
 
-    if splits.insert_splits_for_asset(asset_id):
+    if splits.insert_stock_splits(asset_id):
         flash("Splits added.")
     else:
         flash("Failed to add splits.")
@@ -218,7 +218,7 @@ def add_splits(asset_id):
 def delete_splits(asset_id):
     """Deletes stock splits from asset."""
 
-    if splits.delete_splits_for_asset(asset_id):
+    if splits.delete_stock_splits(asset_id):
         flash("Splits deleted.")
     else:
         flash("No splits to delete.")
@@ -243,7 +243,7 @@ def get_splits():
 def show_splits(asset_id):
     """Show stock splits for asset."""
 
-    s = splits.get_splits_for_asset(asset_id)
+    s = splits.get_stock_splits(asset_id)
 
     if s:
         return render_template("show_splits.html", splits=s)

@@ -1,5 +1,5 @@
 from finance_app.db import execute_db, query_db
-from finance_app.assets import repository as assets
+from finance_app.assets import assets as assets
 from finance_app.market import sources
 
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
@@ -7,10 +7,10 @@ from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
 def get_dividends_for_asset(asset_id: int) -> list:
     """Fetch dividends from database and return them as a list of dictionaries
-    containing "date" and "dividend_value" keys."""
+    containing `date`, `dividend_value` and `currency` keys."""
 
     query = (
-        "SELECT * FROM dividends"
+        "SELECT dividends.date, dividends.dividend_value, accounts.currency FROM dividends"
         " JOIN assets ON assets.asset_id = dividends.asset_id"
         " JOIN accounts ON accounts.account_id = assets.account_id"
         " WHERE dividends.asset_id = ?"

@@ -1,14 +1,14 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from finance_app.accounts import repository as accounts
-from finance_app.assets import repository as assets
-from finance_app.transactions import repository as transactions
+from finance_app.accounts import accounts as accounts
+from finance_app.assets import assets as assets
+from finance_app.transactions import transactions as transactions
 
 
 transactions_bp = Blueprint("transactions", __name__, template_folder="templates")
 
 
-@transactions_bp.route("/acccounts/<int:account_id>/assets/<int:asset_id>/transactions")
+@transactions_bp.route("/accounts/<int:account_id>/assets/<int:asset_id>/transactions")
 def show_transactions(account_id, asset_id):
     """Show transactions from asset as a table."""
 

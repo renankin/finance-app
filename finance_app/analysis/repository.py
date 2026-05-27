@@ -1,8 +1,8 @@
 from scipy import optimize
 import datetime as dt
 
-from finance_app.assets import repository as assets
-from finance_app.transactions import repository as transactions
+from finance_app.assets import assets as assets
+from finance_app.transactions import transactions as transactions
 from finance_app.market import dividends, prices, splits
 
 
@@ -12,7 +12,7 @@ def get_adjusted_transactions(asset_id: int) -> list:
 
     t = transactions.get_transactions_from_asset(asset_id)
 
-    s = splits.get_splits_for_asset(asset_id)
+    s = splits.get_stock_splits(asset_id)
 
     for transaction in t:
         transaction["adjusted"] = "No"

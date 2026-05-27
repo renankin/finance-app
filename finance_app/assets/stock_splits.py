@@ -1,10 +1,10 @@
 from finance_app.db import execute_db, query_db
-from finance_app.assets import repository as assets
+from finance_app.assets import assets as assets
 from finance_app.market import sources
 
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
-def get_splits_for_asset(asset_id: int) -> list:
+def get_stock_splits(account_id: int, asset_id: int) -> list:
     """Fetch splits from database and returns a list of dictionaries containing `date`
     and `split_ratio`."""
 
@@ -22,10 +22,10 @@ def get_splits_for_asset(asset_id: int) -> list:
     return []
 
 
-def delete_splits_for_asset(asset_id: int) -> bool:
+def delete_stock_splits(asset_id: int) -> bool:
     """Deletes stock splits from database."""
 
-    splits = get_splits_for_asset(asset_id)
+    splits = get_stock_splits(asset_id)
 
     if splits:
         execute_db("DELETE FROM stock_splits WHERE asset_id = ?", (asset_id,))
@@ -34,7 +34,7 @@ def delete_splits_for_asset(asset_id: int) -> bool:
     return False
 
 
-def insert_splits_for_asset(asset_id: int) -> bool:
+def insert_stock_splits(asset_id: int) -> bool:
     """Insert stock splits in database and returns True if successful."""
 
     asset = assets.get_asset_by_id(asset_id)
