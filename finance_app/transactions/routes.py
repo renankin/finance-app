@@ -12,7 +12,7 @@ transactions_bp = Blueprint("transactions", __name__, template_folder="templates
 def show_transactions(account_id, asset_id):
     """Show transactions from asset as a table."""
 
-    trans = transactions.get_transactions_from_asset(account_id, asset_id)
+    trans = transactions.get_transactions_from_asset(asset_id)
 
     if not trans:
         flash("No transactions to show. Must add new transaction first.")
@@ -24,7 +24,7 @@ def show_transactions(account_id, asset_id):
 
     account = accounts.get_account_by_id(account_id)
 
-    asset = assets.get_asset_by_id(account_id, asset_id)
+    asset = assets.get_asset_by_id(asset_id)
 
     return render_template(
         "show_transactions.html", account=account, asset=asset, transactions=trans
@@ -40,7 +40,7 @@ def add_transaction(account_id, asset_id):
 
     account = accounts.get_account_by_id(account_id)
 
-    asset = assets.get_asset_by_id(account_id, asset_id)
+    asset = assets.get_asset_by_id(asset_id)
 
     if request.method == "POST":
         date = request.form.get("date")
@@ -67,9 +67,7 @@ def add_transaction(account_id, asset_id):
 def delete_transaction(account_id, asset_id, transaction_id):
     """Deletes transaction"""
 
-    transaction = transactions.get_transaction_by_id(
-        account_id, asset_id, transaction_id
-    )
+    transaction = transactions.get_transaction_by_id(transaction_id)
 
     if transaction:
         transactions.delete_transaction(transaction_id)
@@ -93,11 +91,9 @@ def edit_transaction(account_id, asset_id, transaction_id):
 
     account = accounts.get_account_by_id(account_id)
 
-    asset = assets.get_asset_by_id(account_id, asset_id)
+    asset = assets.get_asset_by_id(asset_id)
 
-    transaction = transactions.get_transaction_by_id(
-        account_id, asset_id, transaction_id
-    )
+    transaction = transactions.get_transaction_by_id(transaction_id)
 
     if request.method == "POST":
         date = request.form.get("date")

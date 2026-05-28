@@ -1,9 +1,9 @@
 from scipy import optimize
 import datetime as dt
 
-from finance_app.assets import assets as assets
-from finance_app.transactions import transactions as transactions
-from finance_app.market import dividends, prices, splits
+from finance_app.assets import assets
+from finance_app.market import dividends, prices, stock_splits
+from finance_app.transactions import transactions
 
 
 def get_adjusted_transactions(asset_id: int) -> list:
@@ -12,7 +12,7 @@ def get_adjusted_transactions(asset_id: int) -> list:
 
     t = transactions.get_transactions_from_asset(asset_id)
 
-    s = splits.get_stock_splits(asset_id)
+    s = stock_splits.get_stock_splits(asset_id)
 
     for transaction in t:
         transaction["adjusted"] = "No"
@@ -25,12 +25,12 @@ def get_adjusted_transactions(asset_id: int) -> list:
     return t
 
 
-def get_return_for_assets() -> list[dict]:
+def get_return_for_assets(account_id: int) -> list[dict]:
     """Returns a list of dictionaries containing the return for all assets
     including `asset_name`, `currency`, `still_open`, `total_invested`,
     `total_sold`, `total_dividends`,`irr` and `net_return`"""
 
-    all_assets = assets.get_all_assets()
+    all_assets = assets.get_assets_from_account(account_id)
 
     all_stats = []
 
@@ -76,7 +76,7 @@ def get_dividends_received(asset_id: int) -> list[dict]:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
 
-    market_divs = dividends.get_dividends_for_asset(asset_id)
+    market_divs = dividends.get_dividends(asset_id)
     t = get_adjusted_transactions(asset_id)
 
     divs_received = []

@@ -4,7 +4,7 @@ from finance_app.market import sources
 
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
-def get_stock_splits(account_id: int, asset_id: int) -> list:
+def get_stock_splits(asset_id: int) -> list:
     """Fetch splits from database and returns a list of dictionaries containing `date`
     and `split_ratio`."""
 

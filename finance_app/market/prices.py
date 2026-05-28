@@ -5,7 +5,7 @@ from finance_app.market import sources
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
 
-def get_prices_for_asset(asset_id: int) -> list:
+def get_prices(asset_id: int) -> list:
     """Get the prices for asset id and return them as list of dictionaries
     with `date`, `unit_price` and `currency` as keys."""
 
@@ -29,7 +29,7 @@ def get_most_recent_price(asset_id: int) -> dict:
     """Returns the most recent price for asset and returns a dictionary
     containing `price` and `date` key."""
 
-    p = get_prices_for_asset(asset_id)
+    p = get_prices(asset_id)
 
     if p:
         price_date = max([price["date"] for price in p])
@@ -45,7 +45,7 @@ def get_most_recent_price(asset_id: int) -> dict:
 def delete_prices_for_asset(asset_id: int) -> bool:
     """Deletes prices from database and returns True if successful."""
 
-    prices = get_prices_for_asset(asset_id)
+    prices = get_prices(asset_id)
 
     if prices:
         execute_db("DELETE FROM prices WHERE asset_id = ?", (asset_id,))

@@ -24,22 +24,44 @@
                    {% if asset["still_open"] %}checked{% endif %}>
           </td>
           <td>
-            <form action="{{ url_for('transactions.show_transactions', account_id=account['account_id'], asset_id=asset['asset_id']) }}"
-                  method="get">
-              <button type="submit" class="btn btn-primary">Show transactions</button>
-            </form>
-          </td>
-          <td>
-            <form action="{{ url_for('assets.edit_asset', account_id=account['account_id'], asset_id=asset['asset_id']) }}"
-                  method="get">
-              <button type="submit" class="btn btn-primary">Edit asset</button>
-            </form>
-          </td>
-          <td>
-            <form action="{{ url_for('assets.delete_asset', account_id=account['account_id'], asset_id=asset['asset_id']) }}"
-                  method="post">
-              <button type="submit" class="btn btn-primary">Delete asset</button>
-            </form>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false">Select option</button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item"
+                     href="{{ url_for('transactions.show_transactions', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Show transactions
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item"
+                     href="{{ url_for('assets.show_dividends', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Show dividends
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item"
+                     href="{{ url_for('assets.show_stock_splits', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Show stock splits
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item"
+                     href="{{ url_for('assets.edit_asset', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Edit asset
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item"
+                     href="{{ url_for('assets.delete_asset', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Delete asset
+                  </a>
+                </li>
+              </ul>
+            </div>
           </td>
         </tr>
       {% endfor %}

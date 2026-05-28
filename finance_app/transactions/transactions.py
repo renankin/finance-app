@@ -1,4 +1,5 @@
 from finance_app.db import query_db, execute_db
+from finance_app.market import stock_splits
 
 
 def delete_transaction(transaction_id: int):
@@ -7,7 +8,7 @@ def delete_transaction(transaction_id: int):
     execute_db("DELETE FROM transactions WHERE transaction_id = ?", (transaction_id,))
 
 
-def get_transactions_from_asset(account_id: int, asset_id: int) -> list[dict]:
+def get_transactions_from_asset(asset_id: int) -> list[dict]:
     """Fetch all transactions from database and returns a list of dictionaries
     containing `currency`, `transaction_id`, `date`, `currency`,
     `shares` and `price`."""
@@ -19,11 +20,11 @@ def get_transactions_from_asset(account_id: int, asset_id: int) -> list[dict]:
         " FROM transactions"
         " JOIN assets ON transactions.asset_id = assets.asset_id"
         " JOIN accounts ON assets.account_id = accounts.account_id"
-        " WHERE assets.asset_id = ? AND accounts.account_id = ?"
+        " WHERE assets.asset_id = ?"
         " ORDER BY transactions.date"
     )
 
-    transactions = query_db(query, (asset_id, account_id))
+    transactions = query_db(query, (asset_id,))
 
     if transactions:
         return transactions
@@ -31,17 +32,36 @@ def get_transactions_from_asset(account_id: int, asset_id: int) -> list[dict]:
     return []
 
 
-def get_transaction_by_id(account_id: int, asset_id: int, transaction_id: int) -> dict:
+def get_adjusted_transactions(asset_id: int) -> list:
+    """Adjust cashflow for assets when there are stock splits and returns a list of
+    dictionaries containing `date`, `shares`, `price`, `currency` and `adjusted`."""
+
+    t = get_transactions_from_asset(asset_id)
+
+    s = stock_splits.get_stock_splits(asset_id)
+
+    for transaction in t:
+        transaction["adjusted"] = "No"
+        for split in s:
+            if transaction["date"] <= split["date"]:
+                transaction["shares"] *= split["split_ratio"]
+                transaction["price"] /= split["split_ratio"]
+                transaction["adjusted"] = "Yes"
+
+    return t
+
+
+def get_transaction_by_id(transaction_id: int) -> dict:
     """Fetch transaction by id"""
 
     query = (
         "SELECT * FROM transactions"
         " JOIN assets ON transactions.asset_id = assets.asset_id"
         " JOIN accounts ON assets.account_id = accounts.account_id"
-        " WHERE accounts.account_id = ? AND assets.asset_id = ? AND transactions.transaction_id = ?"
+        " WHERE transactions.transaction_id = ?"
     )
 
-    transaction = query_db(query, (account_id, asset_id, transaction_id), one=True)
+    transaction = query_db(query, (transaction_id,), one=True)
 
     if transaction:
         return transaction

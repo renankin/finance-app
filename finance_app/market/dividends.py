@@ -5,7 +5,7 @@ from finance_app.market import sources
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
 
-def get_dividends_for_asset(asset_id: int) -> list:
+def get_dividends(asset_id: int) -> list:
     """Fetch dividends from database and return them as a list of dictionaries
     containing `date`, `dividend_value` and `currency` keys."""
 
@@ -25,10 +25,10 @@ def get_dividends_for_asset(asset_id: int) -> list:
     return []
 
 
-def delete_dividends_for_asset(asset_id: int) -> bool:
+def delete_dividends(asset_id: int) -> bool:
     """Deletes dividends from database and returns True if successful"""
 
-    dividends = get_dividends_for_asset(asset_id)
+    dividends = get_dividends(asset_id)
 
     if dividends:
         execute_db("DELETE FROM dividends WHERE asset_id = ?", (asset_id,))
