@@ -59,6 +59,7 @@ def edit_asset(account_id, asset_id):
     s = market_sources.get_all_sources()
 
     if request.method == "POST":
+        account_id = request.form.get("account_id", type=int)
         asset_name = request.form.get("asset_name")
         market_source_id = request.form.get("market_source_id", type=int)
         still_open = request.form.get("still_open", type=bool)
@@ -69,11 +70,12 @@ def edit_asset(account_id, asset_id):
         assets.update_asset(
             asset_id, account_id, asset_name, market_source_id, still_open
         )
+        
         flash("Asset updated.")
         return redirect(url_for("assets.show_assets", account_id=account_id))
 
     return render_template(
-        "edit_asset.html", account=account, asset=asset, market_sources=s
+        "edit_asset.html", account=account, asset=asset, market_sources=s, accounts=accounts.get_all_accounts()
     )
 
 

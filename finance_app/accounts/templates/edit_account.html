@@ -3,7 +3,7 @@
   Edit account
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('accounts.edit', account_id=account['account_id']) }}"
+  <form action="{{ url_for('accounts.edit_account', account_id=account['account_id']) }}"
         method="post">
     <p>
       Account name:

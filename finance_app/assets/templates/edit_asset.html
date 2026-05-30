@@ -7,6 +7,14 @@
   <form action="{{ url_for('assets.edit_asset', account_id=account['account_id'], asset_id=asset['asset_id']) }}"
         method="post">
     <p>
+      Account:
+      <select name="account_id">
+        {% for account in accounts %}
+          <option value="{{ account['account_id'] }}">{{ account["account_name"] }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
       Asset name:
       <input name="asset_name" type="text" value="{{ asset['asset_name'] }}" />
     </p>
