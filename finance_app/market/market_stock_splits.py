@@ -1,6 +1,6 @@
 from finance_app.db import execute_db, query_db
 from finance_app.assets import assets as assets
-from finance_app.market import sources
+from finance_app.market import market_sources
 
 from finance_app.market.fetchers.fetcher_registry import FetcherProtocol
 
@@ -39,7 +39,7 @@ def insert_stock_splits(asset_id: int) -> bool:
 
     asset = assets.get_asset_by_id(asset_id)
 
-    market_source = sources.get_source_by_id(asset["market_source_id"])
+    market_source = market_sources.get_source_by_id(asset["market_source_id"])
 
     fetcher = FetcherProtocol(market_source)
 

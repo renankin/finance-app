@@ -1,5 +1,5 @@
 from finance_app.db import execute_db, query_db
-from finance_app.market import dividends, stock_splits
+from finance_app.market import market_dividends
 from finance_app.transactions import transactions
 
 
@@ -31,10 +31,10 @@ def get_assets_from_account(account_id: int) -> list[dict]:
     return []
 
 
-def get_assets_from_source(source_id: int) -> list:
-    """Fetches assets from database and returns a list of dictionaries containing `asset_id`."""
+def get_assets_from_market_source(source_id: int) -> list:
+    """Fetches assets from database and returns a list of dictionaries containing `asset_name`, `asset_id` and `source_id`."""
 
-    query = "SELECT asset_id FROM assets WHERE market_source_id = ?"
+    query = "SELECT asset_name, asset_id, market_source_id AS source_id FROM assets WHERE market_source_id = ?"
 
     assets = query_db(query, (source_id,))
 
@@ -71,7 +71,7 @@ def get_dividends_received(asset_id: int) -> list[dict]:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
 
-    market_divs = dividends.get_dividends(asset_id)
+    market_divs = market_dividends.get_dividends(asset_id)
     t = transactions.get_adjusted_transactions(asset_id)
 
     divs_received = []

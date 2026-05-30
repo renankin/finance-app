@@ -23,6 +23,12 @@
             </form>
           </td>
           <td>
+            <form action="{{ url_for('analysis.show_account_return', account_id=account['account_id']) }}"
+                  method="get">
+              <button type="submit" class="btn btn-primary">Show return</button>
+            </form>
+          </td>
+          <td>
             <form action="{{ url_for('accounts.edit_account', account_id=account['account_id']) }}"
                   method="get">
               <button type="submit" class="btn btn-primary">Edit Account</button>

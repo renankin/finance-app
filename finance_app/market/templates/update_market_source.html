@@ -3,7 +3,7 @@
   Edit source
 {% endblock title %}
 {% block main %}
-  <form action="{{ url_for('market.update_source', source_id=source['source_id']) }}"
+  <form action="{{ url_for('market.update_market_source', source_id=source['source_id']) }}"
         method="post">
     <p>
       <input value="{{ source['display_name'] }}" name="source_name" type="text" />

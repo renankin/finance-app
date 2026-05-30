@@ -2,7 +2,7 @@ from scipy import optimize
 import datetime as dt
 
 from finance_app.assets import assets
-from finance_app.market import dividends, prices, stock_splits
+from finance_app.market import market_dividends, market_prices, market_stock_splits
 from finance_app.transactions import transactions
 
 
@@ -12,7 +12,7 @@ def get_adjusted_transactions(asset_id: int) -> list:
 
     t = transactions.get_transactions_from_asset(asset_id)
 
-    s = stock_splits.get_stock_splits(asset_id)
+    s = market_stock_splits.get_stock_splits(asset_id)
 
     for transaction in t:
         transaction["adjusted"] = "No"
@@ -44,7 +44,7 @@ def get_return_for_assets(account_id: int) -> list[dict]:
 
         market_value = 0
         if asset["still_open"]:
-            p = prices.get_most_recent_price(asset["asset_id"])
+            p = market_prices.get_most_recent_price(asset["asset_id"])
             if p:
                 total_shares = sum(t["shares"] for t in trans)
                 market_value = total_shares * p["price"]
@@ -76,7 +76,7 @@ def get_dividends_received(asset_id: int) -> list[dict]:
     """Get the dividends received for asset. Returns a list of dictionaries
     containing `date`, `amount_received` and `currency`."""
 
-    market_divs = dividends.get_dividends(asset_id)
+    market_divs = market_dividends.get_dividends(asset_id)
     t = get_adjusted_transactions(asset_id)
 
     divs_received = []
@@ -131,7 +131,7 @@ def get_irr_for_asset(asset_id: int) -> float | None:
 
     a = assets.get_asset_by_id(asset_id)
     if a["still_open"]:
-        p = prices.get_most_recent_price(asset_id)
+        p = market_prices.get_most_recent_price(asset_id)
         if p:
             cashflow.append(p["price"] * total_shares)
             dates.append(p["date"])

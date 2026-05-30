@@ -33,19 +33,20 @@
                 <li>
                   <a class="dropdown-item"
                      href="{{ url_for('transactions.show_transactions', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
-                    Show transactions
+                    Show raw transactions
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item"
+                     href="{{ url_for('assets.show_adjusted_transactions', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Show adjusted transactions
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item"
-                     href="{{ url_for('assets.show_dividends', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
-                    Show dividends
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item"
-                     href="{{ url_for('assets.show_stock_splits', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
-                    Show stock splits
+                     href="{{ url_for('assets.show_dividends_received', account_id=account['account_id'], asset_id=asset['asset_id']) }}">
+                    Show dividends received
                   </a>
                 </li>
                 <li>

@@ -2,7 +2,7 @@ from flask import Blueprint, flash, request, redirect, render_template, url_for
 
 from finance_app.accounts import accounts
 from finance_app.assets import assets
-from finance_app.market import sources, dividends, prices, stock_splits
+from finance_app.market import market_dividends, market_prices, market_sources, market_stock_splits
 from finance_app.transactions import transactions
 
 assets_bp = Blueprint("assets", __name__, template_folder="templates")
@@ -27,7 +27,7 @@ def show_assets(account_id):
 def add_asset(account_id):
     """Add new asset for account."""
 
-    s = sources.get_all_sources()
+    s = market_sources.get_all_sources()
 
     acc = accounts.get_account_by_id(account_id)
 
@@ -54,9 +54,9 @@ def edit_asset(account_id, asset_id):
 
     account = accounts.get_account_by_id(account_id)
 
-    asset = assets.get_asset_by_id(account_id, asset_id)
+    asset = assets.get_asset_by_id(asset_id)
 
-    s = sources.get_all_sources()
+    s = market_sources.get_all_sources()
 
     if request.method == "POST":
         asset_name = request.form.get("asset_name")
@@ -87,15 +87,15 @@ def delete_asset(account_id, asset_id):
         flash("Must delete transactions first.")
         return redirect(url_for("assets.index"))
 
-    if prices.get_prices(asset_id):
+    if market_prices.get_prices(asset_id):
         flash("Must delete prices first.")
         return redirect(url_for("assets.index"))
 
-    if dividends.get_dividends(asset_id):
+    if market_dividends.get_dividends(asset_id):
         flash("Must delete dividends first.")
         return redirect(url_for("assets.index"))
 
-    if stock_splits.get_stock_splits(asset_id):
+    if market_stock_splits.get_stock_splits(asset_id):
         flash("Must delete splits first.")
         return redirect(url_for("assets.index"))
 
@@ -108,7 +108,7 @@ def delete_asset(account_id, asset_id):
 
 
 @assets_bp.route("/accounts/<int:account_id>/assets/<int:asset_id>/dividends")
-def show_dividends(account_id, asset_id):
+def show_dividends_received(account_id, asset_id):
     """Show dividends received for asset."""
 
     dividends = assets.get_dividends_received(asset_id)
@@ -120,8 +120,8 @@ def show_dividends(account_id, asset_id):
     return render_template("show_dividends_received.html", dividends=dividends)
 
 
-@assets_bp.route("/accounts/<int:account_id>/assets/<int:asset_id>/stock_splits")
-def show_stock_splits(account_id, asset_id):
+@assets_bp.route("/accounts/<int:account_id>/assets/<int:asset_id>/adjusted_transactions")
+def show_adjusted_transactions(account_id, asset_id):
     """Show adjusted prices and shares for asset."""
 
     t = transactions.get_adjusted_transactions(asset_id)

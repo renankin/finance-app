@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% block title %}
+  Market assets
+{% endblock title %}
+{% block main %}
+  <table class="table table-borderless">
+    <thead>
+      <tr>
+        <th>Asset name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in assets: %}
+        <tr>
+          <td>{{ asset["asset_name"] }}</td>
+          <!-- Prices -->
+          <td>
+            <button class="btn btn-secondary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">Prices</button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item"
+                   href="{{ url_for('market.show_market_prices', source_id=asset['source_id'], asset_id=asset['asset_id']) }}">
+                  Show prices
+                </a>
+              </li>
+              <li class="dropdown-item">
+                <form action="{{ url_for('market.add_market_prices', source_id=asset['source_id'], asset_id=asset['asset_id']) }}"
+                      method="post">
+                  <button type="submit" class="btn btn-link nav-link">Add prices</button>
+                </form>
+              </li>
+              <li class="dropdown-item">
+                <form action="{{ url_for('market.delete_market_prices', source_id=asset['source_id'], asset_id=asset['asset_id']) }}"
+                      method="post">
+                  <button type="submit" class="btn btn-link nav-link">Delete prices</button>
+                </form>
+              </li>
+            </ul>
+          </td>
+          <!-- Dividends -->
+          <td>
+            <button class="btn btn-secondary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">Dividends</button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item"
+                   href="{{ url_for('market.show_market_dividends', source_id=asset['source_id'], asset_id=asset['asset_id']) }}">
+                  Show dividends
+                </a>
+              </li>
+              <li class="dropdown-item">
+                <form action="{{ url_for('market.add_market_dividends', source_id=asset['source_id'], asset_id=asset['asset_id']) }}"
+                      method="post">
+                  <button type="submit" class="btn btn-link nav-link">Add dividends</button>
+                </form>
+              </li>
+              <li class="dropdown-item">
+                <form action="{{ url_for('market.delete_market_dividends', source_id=asset['source_id'], asset_id=asset['asset_id']) }}"
+                      method="post">
+                  <button type="submit" class="btn btn-link nav-link">Delete dividends</button>
+                </form>
+              </li>
+            </ul>
+          </td>
+          <!-- Stock splits -->
+          <td>
+            <button class="btn btn-secondary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">Stock splits</button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item"
+                   href="{{ url_for('market.show_market_stock_splits', source_id=asset['source_id'], asset_id=asset['asset_id']) }}">
+                  Show stock splits
+                </a>
+              </li>
+              <li class="dropdown-item">
+                <form action="{{ url_for('market.add_market_stock_splits', source_id=asset['source_id'], asset_id=asset['asset_id']) }}"
+                      method="post">
+                  <button type="submit" class="btn btn-link nav-link">Add stock splits</button>
+                </form>
+              </li>
+              <li class="dropdown-item">
+                <form action="{{ url_for('market.delete_market_stock_splits', source_id=asset['source_id'], asset_id=asset['asset_id']) }}"
+                      method="post">
+                  <button type="submit" class="btn btn-link nav-link">Delete stock splits</button>
+                </form>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}
