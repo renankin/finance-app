@@ -24,121 +24,21 @@
           <thead>
             <tr>
               <th>Asset symbol</th>
-              <th>Asset name</th>
-              <th>Account name</th>
-              <th>Asset type</th>
-              <th>Benchmark index</th>
-              <th>Expense ratio</th>
-              <th>Total assets</th>
               <th>Position open</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {% for asset in assets: %}
               <tr>
-                <td>{{ asset["asset_symbol"] }}</td>
-                <td>{{ asset["asset_name"] }}</td>
-                <td>{{ asset["account_name"] }}</td>
-                <td>{{ asset["asset_type"] }}</td>
-                <td>{{ asset["benchmark_index"] }}</td>
-                <td>{{ asset["expense_ratio"] | format_percent(in_percent=True) }}</td>
-                <td>{{ asset["total_assets"] | format_currency(asset["currency"]) }}</td>
+                <td>
+                  <a href="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}">
+                    {{ asset["asset_symbol"] }}
+                  </a>
+                </td>
                 <td>
                   <input type="checkbox"
                          disabled
                          {% if asset["still_open"] %}checked{% endif %} />
-                </td>
-                <td>
-                  <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown"></button>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a class="dropdown-item"
-                           href="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}">Edit asset</a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('assets.delete', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Delete asset</button>
-                          </form>
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item"
-                           href="{{ url_for('market.show_prices', asset_id=asset['asset_id']) }}">Show Prices</a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('market.add_prices', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Add prices</button>
-                          </form>
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('market.delete_prices', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Delete prices</button>
-                          </form>
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item"
-                           href="{{ url_for('market.show_splits', asset_id=asset['asset_id']) }}">
-                          Show Stock splits
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('market.add_splits', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Add stock splits</button>
-                          </form>
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('market.delete_splits', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Delete stock splits</button>
-                          </form>
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item"
-                           href="{{ url_for('assets.show_dividends', asset_id=asset['asset_id']) }}">
-                          Show dividends received
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item"
-                           href="{{ url_for('market.show_dividends', asset_id=asset['asset_id']) }}">
-                          Show Dividends
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('market.add_dividends', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Add dividends</button>
-                          </form>
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item">
-                          <form action="{{ url_for('market.delete_dividends', asset_id=asset['asset_id']) }}"
-                                method="post">
-                            <button type="submit" class="btn">Delete dividends</button>
-                          </form>
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
                 </td>
               </tr>
             {% endfor %}

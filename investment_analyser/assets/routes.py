@@ -94,7 +94,7 @@ def edit(asset_id):
         flash("Asset updated.")
         return redirect(url_for("assets.index"))
 
-    return render_template("edit_asset.html", asset=asset)
+    return render_template("edit_asset.html", asset=asset, asset_id=asset_id)
 
 
 @assets_bp.route("/assets/<int:asset_id>/delete", methods=["POST"])
@@ -141,4 +141,5 @@ def show_dividends(asset_id):
         "show_dividends_received.html",
         dividends=dividends,
         currency=account["currency"],
+        asset_id=asset_id,
     )

@@ -1,92 +1,56 @@
-{% extends "layout.html" %}
-{% block title %}
-  Edit
-{% endblock title %}
-{% block main %}
-  <div class="container">
-    <form action="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}"
-          method="post">
-      <div class="mb-3">
-        <label class="form-label" for="assetSymbolInput">Asset symbol</label>
-        <input type="text"
-               class="form-control"
-               id="assetSymbolInput"
-               placeholder="Asset symbol"
-               name="asset_symbol"
-               value="{{ asset['asset_symbol'] }}">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="assetNameInput">Asset name</label>
-        <input name="asset_name"
-               type="text"
-               id="assetNameInput"
-               placeholder="Asset name"
-               class="form-control"
-               value="{{ asset['asset_name'] }}" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="assetNameInput">Asset type</label>
-        <select class="form-select" name="asset_type">
-          <option value="Stock"
-                  {% if asset["asset_type"] == "Stock" %}selected{% endif %}>
-            Stock
-          </option>
-          <option value="ETF" {% if asset["asset_type"] == "ETF" %}selected{% endif %}>
-            ETF
-          </option>
-          <option value="Brazilian bond"
-                  {% if asset["asset_type"] == "Brazilian bond" %}selected{% endif %}>
-            Brazilian bond
-          </option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="benchmarkIndexInput">Benchmark index</label>
-        <input type="text"
-               class="form-control"
-               id="benchmarkIndexInput"
-               placeholder="Benchmark index"
-               name="benchmark_index"
-               value="{{ asset['benchmark_index'] }}">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="expenseRatioInput">Expense ratio (%)</label>
-        <input type="number"
-               class="form-control"
-               id="expenseRatioInput"
-               step="0.01"
-               placeholder="Expense ratio"
-               name="expense_ratio"
-               value="{{ asset['expense_ratio'] }}">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="fundSizeInput">
-          Total assets (in local currency)
+{% extends "asset_layout.html" %}
+{% block asset %}
+  <form action="{{ url_for('assets.edit', asset_id=asset['asset_id']) }}"
+        method="post">
+    <div class="mb-3">
+      <label class="form-label" for="assetSymbolInput">Asset symbol</label>
+      <input type="text"
+             class="form-control"
+             id="assetSymbolInput"
+             placeholder="Asset symbol"
+             name="asset_symbol"
+             value="{{ asset['asset_symbol'] }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="assetNameInput">Asset name</label>
+      <input name="asset_name"
+             type="text"
+             id="assetNameInput"
+             placeholder="Asset name"
+             class="form-control"
+             value="{{ asset['asset_name'] }}" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="assetNameInput">Asset type</label>
+      <select class="form-select" name="asset_type">
+        <option value="Stock"
+                {% if asset["asset_type"] == "Stock" %}selected{% endif %}>
+          Stock
+        </option>
+        <option value="ETF" {% if asset["asset_type"] == "ETF" %}selected{% endif %}>
+          ETF
+        </option>
+        <option value="Brazilian bond"
+                {% if asset["asset_type"] == "Brazilian bond" %}selected{% endif %}>
+          Brazilian bond
+        </option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <div class="form-check">
+        <input name="still_open"
+               type="checkbox"
+               id="openPositionCheckBox"
+               value="1"
+               class="form-check-input"
+               {% if asset["still_open"] %}checked{% endif %} />
+        <label class="form-check-label" for="openPositionCheckBox">
+          Position open
         </label>
-        <input type="number"
-               class="form-control"
-               id="totalAssetsInput"
-               placeholder="Total assets"
-               name="total_assets"
-               step="1"
-               value="{{ asset['total_assets'] }}">
       </div>
-      <div class="mb-3">
-        <div class="form-check">
-          <input name="still_open"
-                 type="checkbox"
-                 id="openPositionCheckBox"
-                 value="1"
-                 class="form-check-input"
-                 {% if asset["still_open"] %}checked{% endif %} />
-          <label class="form-check-label" for="openPositionCheckBox">
-            Position open
-          </label>
-        </div>
-      </div>
-      <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Edit</button>
-      </div>
-    </form>
-  </div>
-{% endblock main %}
+    </div>
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary">Edit</button>
+    </div>
+  </form>
+{% endblock asset %}

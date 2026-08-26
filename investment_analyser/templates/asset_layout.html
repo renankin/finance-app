@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}
+  Asset
+{% endblock title %}
+{% block main %}
+  <div class="container">
+    <div class="mb-4">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active"
+             aria-current="page"
+             href="{{ url_for('assets.edit', asset_id=asset_id) }}">Edit</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             href="{{ url_for('assets.show_dividends', asset_id=asset_id) }}">Dividends</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+    </div>
+    {% block asset %}
+    {% endblock asset %}
+  </div>
+{% endblock main %}
