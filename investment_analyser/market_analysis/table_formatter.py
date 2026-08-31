@@ -11,9 +11,12 @@ def format_etf_table(symbol: str) -> dict:
     """Include something here."""
 
     fetcher = YFetcher(symbol)
+    watchlist = assets.get_asset(asset_symbol=symbol)
+    if not fetcher.is_etf():
+        underlying_symbol = assets.get_etf_data(watchlist["asset_id"])["underlying_etf_symbol"]
+        fetcher = YFetcher(underlying_symbol)
 
     basic_info = {}
-    watchlist = assets.get_asset(asset_symbol=symbol)
     if watchlist:
         basic_info["Symbol"] = watchlist["asset_symbol"]
         basic_info["Name"] = watchlist["asset_name"]
@@ -56,6 +59,7 @@ def format_etf_table(symbol: str) -> dict:
             f"{sector_key} ({format_percent(sector_weight)})"
         )
         i += 1
+
 
     top_holdings = {}
     i = 1

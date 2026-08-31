@@ -63,7 +63,7 @@ class YFetcher:
 
         return Series()
 
-    def get_top_holdings(self) -> DataFrame | None:
+    def get_top_holdings(self) -> DataFrame:
         """Returns a Dataframe with columns `Name` and `Holding Percent`
         which is indexed with `Symbol`. The DataFrame is sorted by holding percent."""
 
@@ -72,7 +72,7 @@ class YFetcher:
                 "Holding Percent", ascending=False
             )
 
-        return None
+        return DataFrame()
 
     def get_sector_weighting(self) -> dict:
         """Returns a dictionary contianing sector key and sector weight for the asset
